@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partner With AquaNaut Systems</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Poppins:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --primary-blue: #005f73;
+            --accent-teal: #0a9396;
+            --deep-ocean: #001219;
+            --text-dark: #2d3748;
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            /* Moving gradient background */
+            background: linear-gradient(-45deg, #e0f7fa, #b2dfdb, #e0f7fa, #ffffff);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-dark); 
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- HEADER STYLES (MATCHING HOMEPAGE) --- */
+        header { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            width: 100%;
+        }
+        
+        .container-nav { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        nav { display: flex; justify-content: space-between; align-items: center; height: 80px; }
+        
+        /* Logo Styles */
+        .logo { display: flex; align-items: center; }
+        .logo img { height: 80px; width: auto; object-fit: contain; }
+
+        /* Nav Links Styles */
+        .nav-links { display: flex; gap: 30px; font-weight: 600; align-items: center; }
+        .nav-links a { font-family: 'Poppins', sans-serif; color: var(--primary-blue); font-size: 1rem; text-decoration: none; }
+        .nav-links a:hover { color: var(--accent-teal); transform: translateY(-2px); display: inline-block; }
+
+        /* --- FORM CONTAINER --- */
+        .page-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            min-height: calc(100vh - 80px); /* Height minus header */
+        }
+
+        .container-form { 
+            width: 100%; 
+            max-width: 700px; 
+        }
+        
+        /* --- THE GLASS FORM CARD --- */
+        .form-wrapper {
+            background: rgba(255, 255, 255, 0.9); /* Slight transparency */
+            backdrop-filter: blur(10px); /* Glass blur effect */
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 20px 50px rgba(0, 95, 115, 0.15); /* Soft deep shadow */
+            border: 1px solid rgba(255,255,255,1);
+            animation: slideUp 0.8s ease-out;
+            text-align: center; 
+        }
+
+        h1 { 
+            font-family: 'Poppins', sans-serif; 
+            color: var(--primary-blue); 
+            font-size: 2.5rem; 
+            margin-bottom: 10px; 
+            font-weight: 800;
+        }
+
+        p.subtitle { 
+            margin-bottom: 40px; 
+            color: #666; 
+            font-size: 1.1rem;
+        }
+
+        /* --- INPUT FIELDS --- */
+        form { text-align: left; } 
+
+        label { 
+            font-weight: 700; 
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            color: var(--primary-blue);
+            display: block; 
+            margin-bottom: 8px; 
+            margin-top: 25px; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 16px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: var(--deep-ocean);
+            transition: all 0.3s;
+        }
+
+        /* Input Glow Effect */
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent-teal);
+            background: #fff;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(10, 147, 150, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* --- THE SPECTACULAR BUTTON --- */
+        .submit-btn {
+            display: block;
+            width: 100%;
+            margin-top: 40px;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--accent-teal) 0%, var(--primary-blue) 100%);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 50px; 
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(10, 147, 150, 0.3);
+            transition: all 0.4s ease;
+        }
+
+        .submit-btn:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 20px 40px rgba(10, 147, 150, 0.5); 
+            background: linear-gradient(135deg, #0bc4c7 0%, #007ea3 100%);
+        }
+
+        /* --- THE BACK LINK (RESTORED) --- */
+        .back-link-wrapper {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .back-link { 
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #8898aa;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: 0.3s;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: var(--primary-blue);
+            background: #f1f5f9;
+            transform: translateX(-5px); /* Slide left animation */
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .nav-links { display: none; } /* Hide menu on small screens */
+            .form-wrapper { padding: 30px 20px; }
+            h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container-nav">
+            <nav>
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="Logo.png" alt="AquaNaut Systems Logo">
+                    </a>
+                </div>
+                
+                <ul class="nav-links">
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#technology">Technology</a></li>
+                    <li><a href="index.html#services">Services</a></li>
+                    <li><a href="index.html#team">Team</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="page-content">
+        <div class="container-form">
+            <div class="form-wrapper">
+                
+                <h1>Partner with AquaNaut</h1>
+                <p class="subtitle">Join us in restoring the purity of our waterways.</p>
+
+                <form action="https://formspree.io/f/xpwvgarw" method="POST">
+                    
+                    <label for="name">Full Name / Organization</label>
+                    <input type="text" id="name" name="name" placeholder="e.g. Lagos State Waterways Authority or Eko Hotel" required>
+
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="contact@company.com" required>
+
+                    <label for="interest">I am interested in:</label>
+                    <select id="interest" name="interest">
+                        <option value="caas" disabled>Cleanup-as-a-Service (Coming Soon)</option>
+                        <option value="purchase" disabled>Direct Purchase of Interceptor Units (Coming Soon)</option>
+                        <option value="lease" disabled>Leasing for Government/Municipal (Coming Soon)</option>
+                        <option value="data" disabled>Pollution Data Reports (Coming Soon)</option>
+                        
+                        <option value="invest" selected>Investment / Grants</option>
+                    </select>
+
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="4" placeholder="Tell us about your location or specific needs..."></textarea>
+
+                    <button type="submit" class="submit-btn">Send Inquiry</button>
+                </form>
+
+                <div class="back-link-wrapper">
+                    <a href="index.html" class="back-link">
+                        <span>←</span> Back to Homepage
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
