@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In | AquaNaut Systems</title>
+<link rel="icon" type="image/png" href="Logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary-blue: #005f73;
+    --deep-ocean: #001219;
+    --accent-teal: #0a9396;
+    --accent-glow: #94d2bd;
+    --text-light: #ffffff;
+    --text-muted: rgba(255,255,255,0.45);
+    --glass: rgba(255,255,255,0.04);
+    --glass-border: rgba(148,210,189,0.15);
+    --input-bg: rgba(255,255,255,0.06);
+    --input-border: rgba(148,210,189,0.2);
+    --input-focus: rgba(10,147,150,0.4);
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--deep-ocean);
+    color: var(--text-light);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── SPLIT LAYOUT ── */
+  .page-wrap {
+    display: flex;
+    flex: 1;
+    min-height: 100vh;
+  }
+
+  /* LEFT — visual panel */
+  .visual-panel {
+    flex: 1.1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 50px;
+    background:
+      linear-gradient(160deg, rgba(0,18,25,0.3) 0%, rgba(0,95,115,0.6) 50%, rgba(0,18,25,0.95) 100%),
+      url('https://images.unsplash.com/photo-1484291470158-b8f8d608850d?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+  }
+
+  .visual-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, transparent 60%, var(--deep-ocean) 100%);
+    pointer-events: none;
+  }
+
+  .panel-logo {
+    position: absolute;
+    top: 40px; left: 50px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: var(--accent-glow);
+    letter-spacing: -0.5px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .panel-logo-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--accent-teal);
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(10,147,150,0.4); }
+    50% { opacity:0.5; box-shadow: 0 0 0 6px rgba(10,147,150,0); }
+  }
+
+  .panel-content {
+    position: relative;
+    z-index: 1;
+    animation: panelIn 1s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+  }
+
+  @keyframes panelIn {
+    from { opacity:0; transform: translateY(30px); }
+    to { opacity:1; transform: translateY(0); }
+  }
+
+  .panel-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(10,147,150,0.15);
+    border: 1px solid rgba(10,147,150,0.3);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent-glow);
+    margin-bottom: 18px;
+  }
+
+  .panel-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent-teal);
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  .panel-heading {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #ffffff 40%, var(--accent-glow) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .panel-desc {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.7;
+    max-width: 380px;
+  }
+
+  .panel-stats {
+    display: flex;
+    gap: 30px;
+    margin-top: 35px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(148,210,189,0.12);
+  }
+
+  .stat-item { }
+  .stat-num {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--accent-glow);
+  }
+  .stat-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* RIGHT — form panel */
+  .form-panel {
+    width: 480px;
+    min-width: 480px;
+    background: var(--deep-ocean);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 50px;
+    border-left: 1px solid var(--glass-border);
+    position: relative;
+  }
+
+  /* subtle grid pattern on form side */
+  .form-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(148,210,189,0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+  }
+
+  .form-inner {
+    position: relative;
+    z-index: 1;
+    animation: formIn 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+    opacity: 0;
+  }
+
+  @keyframes formIn {
+    from { opacity:0; transform: translateX(20px); }
+    to { opacity:1; transform: translateX(0); }
+  }
+
+  .form-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent-teal);
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    color: white;
+  }
+
+  .form-sub {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-bottom: 38px;
+    line-height: 1.6;
+  }
+
+  .field {
+    margin-bottom: 18px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 8px;
+  }
+
+  .input-wrap {
+    position: relative;
+  }
+
+  .input-wrap .icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1rem;
+    pointer-events: none;
+    transition: color 0.3s;
+  }
+
+  .input-wrap:focus-within .icon { color: var(--accent-teal); }
+
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 14px 14px 14px 42px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.3s;
+  }
+
+  input::placeholder { color: rgba(255,255,255,0.2); }
+
+  input:focus {
+    border-color: var(--accent-teal);
+    background: rgba(10,147,150,0.08);
+    box-shadow: 0 0 0 3px var(--input-focus);
+  }
+
+  .field-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 7px;
+  }
+
+  .forgot-link {
+    font-size: 0.78rem;
+    color: var(--accent-glow);
+    text-decoration: none;
+    opacity: 0.75;
+    transition: opacity 0.2s;
+  }
+  .forgot-link:hover { opacity: 1; }
+
+  /* Remember me */
+  .remember-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .remember-row input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--accent-teal);
+    cursor: pointer;
+  }
+
+  .remember-row label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+
+  /* Error message */
+  .msg {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    margin-bottom: 18px;
+    display: none;
+    animation: msgIn 0.3s ease;
+  }
+  @keyframes msgIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+  .msg.error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.25);
+    color: #fca5a5;
+  }
+  .msg.success {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.25);
+    color: #6ee7b7;
+  }
+
+  /* Submit button */
+  .btn-submit {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--accent-teal), var(--primary-blue));
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    box-shadow: 0 8px 25px rgba(10,147,150,0.3);
+    letter-spacing: 0.3px;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(10,147,150,0.45);
+  }
+  .btn-submit:active { transform: translateY(0); }
+
+  .btn-submit.loading { pointer-events: none; opacity: 0.75; }
+  .btn-loader { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; }
+  .btn-submit.loading .btn-text { opacity: 0; }
+  .btn-submit.loading .btn-loader { opacity: 1; }
+  .spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .register-link {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .register-link a {
+    color: var(--accent-glow);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .register-link a:hover { color: white; }
+
+  .back-home {
+    display: block;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .back-home:hover { color: var(--accent-glow); }
+
+  @media (max-width: 900px) {
+    .visual-panel { display: none; }
+    .form-panel { width: 100%; min-width: unset; border-left: none; padding: 50px 30px; min-height: 100vh; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- LEFT VISUAL PANEL -->
+  <div class="visual-panel">
+    <a href="index.html" class="panel-logo">
+      <div class="panel-logo-dot"></div>
+      AquaNaut
+    </a>
+
+    <div class="panel-content">
+      <div class="panel-tag">Command Center Access</div>
+      <h2 class="panel-heading">Monitor.<br>Track.<br>Command.</h2>
+      <p class="panel-desc">Sign in to your AquaNaut dashboard to access real-time fleet data, waste analytics, and ocean intelligence for your waterways.</p>
+
+      <div class="panel-stats">
+        <div class="stat-item">
+          <div class="stat-num">3+</div>
+          <div class="stat-label">Active Bots</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">36kg</div>
+          <div class="stat-label">Waste Collected</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">Live</div>
+          <div class="stat-label">GPS Tracking</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT FORM PANEL -->
+  <div class="form-panel">
+    <div class="form-inner">
+      <div class="form-eyebrow">Welcome Back</div>
+      <h1>Sign In</h1>
+      <p class="form-sub">Enter your credentials to access the AquaNaut Command Center.</p>
+
+      <div class="msg" id="msgBox"></div>
+
+      <form id="loginForm" autocomplete="off">
+
+        <div class="field">
+          <label>Email Address</label>
+          <div class="input-wrap">
+            <span class="icon">✉️</span>
+            <input type="email" id="email" placeholder="you@company.com" required autofocus>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <div class="input-wrap">
+            <span class="icon">🔒</span>
+            <input type="password" id="password" placeholder="••••••••" required>
+          </div>
+          <div class="field-footer">
+            <a href="#" class="forgot-link">Forgot password?</a>
+          </div>
+        </div>
+
+        <div class="remember-row">
+          <input type="checkbox" id="remember">
+          <label for="remember">Keep me signed in</label>
+        </div>
+
+        <button type="submit" class="btn-submit" id="loginBtn">
+          <span class="btn-text">Sign In to Dashboard</span>
+          <span class="btn-loader"><div class="spinner"></div></span>
+        </button>
+
+      </form>
+
+      <div class="register-link">
+        Don't have an account? <a href="register.html">Create one here</a>
+      </div>
+
+      <a href="index.html" class="back-home">← Back to AquaNaut website</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function showMsg(text, type) {
+    const box = document.getElementById('msgBox');
+    box.className = 'msg ' + type;
+    box.innerHTML = text;
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const btn = document.getElementById('loginBtn');
+    btn.classList.add('loading');
+
+    try {
+      const res = await fetch('http://localhost:5000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: document.getElementById('email').value,
+          password: document.getElementById('password').value
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        localStorage.setItem('token', data.token);
+        showMsg('✅ Login successful! Redirecting...', 'success');
+        setTimeout(() => window.location.href = 'dashboard.html', 1200);
+      } else {
+        showMsg('❌ Invalid email or password. Please try again.', 'error');
+        btn.classList.remove('loading');
+      }
+    } catch (err) {
+      showMsg('⚠️ Cannot connect to server. Make sure it\'s running.', 'error');
+      btn.classList.remove('loading');
+    }
+  });
+</script>
+</body>
+</html>
