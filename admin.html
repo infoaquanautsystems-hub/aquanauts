@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin | AquaNaut Systems</title>
+<link rel="icon" type="image/png" href="Logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --deep-ocean: #001219;
+  --accent-teal: #0a9396;
+  --accent-glow: #94d2bd;
+  --glass: rgba(255,255,255,0.04);
+  --glass-border: rgba(148,210,189,0.15);
+  --input-bg: rgba(255,255,255,0.06);
+  --input-border: rgba(148,210,189,0.2);
+}
+
+body {
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--deep-ocean);
+  color: white;
+}
+
+/* BACKGROUND */
+.ocean-bg {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(0,95,115,0.3), transparent 60%),
+    radial-gradient(circle at 80% 20%, rgba(10,147,150,0.2), transparent 60%),
+    var(--deep-ocean);
+}
+
+/* CENTER CARD */
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 40px;
+  backdrop-filter: blur(25px);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+}
+
+h1 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  margin-bottom: 5px;
+  background: linear-gradient(135deg,#fff,var(--accent-glow));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tagline {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 25px;
+}
+
+/* INPUTS */
+.field {
+  margin-bottom: 15px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: white;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--accent-teal);
+}
+
+/* BUTTON */
+button {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent-teal), #005f73);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* ERROR */
+#error {
+  color: #f87171;
+  margin-top: 10px;
+}
+
+/* DASHBOARD */
+.dashboard {
+  display: none;
+  padding: 20px;
+}
+
+.bot {
+  background: rgba(255,255,255,0.05);
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="ocean-bg"></div>
+
+<main>
+
+  <!-- LOGIN -->
+  <div class="card" id="loginBox">
+    <h1>Admin Access</h1>
+    <p class="tagline">Let’s change the world one water way at a time.</p>
+
+    <div class="field">
+      <input type="email" id="email" placeholder="Admin Email">
+    </div>
+
+    <div class="field">
+      <input type="password" id="password" placeholder="Password">
+    </div>
+
+    <button onclick="login()">Login</button>
+    <p id="error"></p>
+  </div>
+
+</main>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <h1 style="text-align:center;">Admin Dashboard</h1>
+
+  <h3>Total Waste Collected: <span id="total"></span></h3>
+
+  <div id="bots"></div>
+</div>
+
+<script>
+// PRESET ADMINS
+const admins = [
+  { email: "admin@aquanaut.com", password: "admin123" }
+];
+
+// DUMMY BOTS
+const bots = [
+  { name: "Bot Alpha", purchased: 5, active: 3, waste: 120 },
+  { name: "Bot Beta", purchased: 2, active: 2, waste: 80 },
+  { name: "Bot Gamma", purchased: 4, active: 1, waste: 40 }
+];
+
+function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const valid = admins.find(a => a.email === email && a.password === password);
+
+  if (!valid) {
+    document.getElementById("error").innerText = "Invalid admin credentials";
+    return;
+  }
+
+  document.getElementById("loginBox").style.display = "none";
+  document.querySelector("main").style.display = "none";
+  document.getElementById("dashboard").style.display = "block";
+
+  loadDashboard();
+}
+
+function loadDashboard() {
+  let total = 0;
+  const container = document.getElementById("bots");
+
+  bots.forEach(bot => {
+    total += bot.waste;
+
+    const div = document.createElement("div");
+    div.className = "bot";
+    div.innerHTML = `
+      <strong>${bot.name}</strong><br>
+      Purchased: ${bot.purchased}<br>
+      Active: ${bot.active}<br>
+      Waste: ${bot.waste} kg
+    `;
+    container.appendChild(div);
+  });
+
+  document.getElementById("total").innerText = total + " kg";
+}
+</script>
+
+</body>
+</html>
