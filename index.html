@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AquaNaut | Autonomous Marine Robotics</title>
+  <link rel="icon" type="image/png" href="Logo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary-blue: #005f73;
+      --deep-ocean:   #001219;
+      --accent-teal:  #0a9396;
+      --teal-light:   #94d2bd;
+      --sand:         #e9d8a6;
+      --coral:        #ee9b00;
+      --text-light:   #ffffff;
+      --text-muted:   rgba(255,255,255,0.55);
+      --glass:        rgba(255,255,255,0.06);
+      --glass-border: rgba(255,255,255,0.1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--deep-ocean);
+      color: var(--text-light);
+      overflow-x: hidden;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 18px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,18,25,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+      transition: all 0.3s;
+    }
+
+    .nav-logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--accent-teal);
+      letter-spacing: 1px;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--text-muted); font-weight: 400; font-size: 0.9rem; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 6px;
+      transition: all 0.25s;
+    }
+    .nav-links a:hover { color: var(--text-light); background: var(--glass); }
+
+    .nav-btn {
+      padding: 9px 20px !important;
+      border-radius: 8px !important;
+      font-weight: 600 !important;
+      font-size: 0.84rem !important;
+      transition: all 0.25s !important;
+    }
+    .nav-btn-outline {
+      border: 1px solid var(--accent-teal) !important;
+      color: var(--accent-teal) !important;
+    }
+    .nav-btn-outline:hover {
+      background: rgba(10,147,150,0.12) !important;
+      color: var(--text-light) !important;
+    }
+    .nav-btn-filled {
+      background: var(--accent-teal) !important;
+      color: white !important;
+      border: 1px solid var(--accent-teal) !important;
+    }
+    .nav-btn-filled:hover {
+      background: var(--primary-blue) !important;
+      border-color: var(--primary-blue) !important;
+      transform: translateY(-1px);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      padding: 120px 30px 80px;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(rgba(0,18,25,0.7), rgba(0,18,25,0.85)),
+        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero-glow {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 60%, rgba(10,147,150,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 780px; }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(10,147,150,0.12);
+      border: 1px solid rgba(10,147,150,0.3);
+      border-radius: 30px;
+      padding: 6px 18px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--teal-light);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .hero-tag .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent-teal);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 22px;
+    }
+    .hero h1 .accent { color: var(--accent-teal); }
+
+    .hero p {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      max-width: 580px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      padding: 14px 32px;
+      background: var(--accent-teal);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      letter-spacing: 0.5px;
+      transition: all 0.3s;
+      display: inline-block;
+    }
+    .btn-primary:hover {
+      background: var(--primary-blue);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(10,147,150,0.35);
+    }
+    .btn-secondary {
+      padding: 14px 32px;
+      background: transparent;
+      color: var(--text-light);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      letter-spacing: 0.5px;
+      transition: all 0.3s;
+      display: inline-block;
+    }
+    .btn-secondary:hover {
+      border-color: var(--accent-teal);
+      background: rgba(10,147,150,0.08);
+      transform: translateY(-3px);
+    }
+
+    /* ── SCROLL INDICATOR ── */
+    .scroll-hint {
+      position: absolute;
+      bottom: 32px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column;
+      align-items: center; gap: 8px;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(6px);} }
+
+    /* ── SECTION BASE ── */
+    section { padding: 100px 60px; }
+
+    .section-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--accent-teal);
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 18px;
+    }
+    .section-title .accent { color: var(--accent-teal); }
+    .section-sub {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.75;
+      max-width: 600px;
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      background: rgba(255,255,255,0.03);
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 40px 60px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      text-align: center;
+    }
+    .stat-item .stat-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--accent-teal);
+    }
+    .stat-item .stat-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 70px;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .about-img-wrap {
+      position: relative;
+    }
+    .about-img {
+      width: 100%;
+      border-radius: 20px;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+    }
+    .about-img-placeholder {
+      width: 100%;
+      aspect-ratio: 4/3;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(10,147,150,0.15), rgba(0,95,115,0.2));
+      border: 1px solid var(--glass-border);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .about-img-placeholder .big-icon { font-size: 3rem; }
+
+    .about-badges {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px;
+    }
+    .badge {
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+    .badge-teal { border-color: var(--accent-teal); color: var(--teal-light); }
+    .badge-sand { border-color: var(--sand); color: var(--sand); }
+
+    /* ── TECHNOLOGY ── */
+    .tech-section { background: rgba(255,255,255,0.02); }
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1200px;
+      margin: 50px auto 0;
+    }
+    .tech-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .tech-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-teal), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .tech-card:hover { transform: translateY(-5px); border-color: rgba(10,147,150,0.3); }
+    .tech-card:hover::before { opacity: 1; }
+
+    .tech-icon {
+      width: 52px; height: 52px;
+      background: rgba(10,147,150,0.12);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+    }
+    .tech-card h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .tech-card p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.65;
+    }
+
+    /* ── IMPACT ── */
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1000px;
+      margin: 50px auto 0;
+    }
+    .impact-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 36px 28px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    .impact-card:hover { border-color: rgba(10,147,150,0.35); transform: translateY(-4px); }
+    .impact-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--accent-teal);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .impact-label { color: var(--text-muted); font-size: 0.82rem; line-height: 1.5; }
+
+    /* ── TEAM ── */
+    .team-section { max-width: 1200px; margin: 0 auto; }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+      margin-top: 50px;
+    }
+    .team-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    .team-card:hover { border-color: rgba(10,147,150,0.35); transform: translateY(-4px); }
+    .team-avatar {
+      width: 88px; height: 88px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      overflow: hidden;
+      border: 3px solid rgba(10,147,150,0.4);
+      box-shadow: 0 0 0 4px rgba(10,147,150,0.1);
+    }
+    .team-avatar img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .team-name {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    .team-role {
+      font-size: 0.75rem;
+      color: var(--accent-teal);
+      margin-bottom: 0;
+      line-height: 1.4;
+      font-weight: 600;
+    }
+
+    /* ── ADMIN LOGIN BLOCK ── */
+    .admin-login-block {
+      max-width: 480px;
+      margin: 60px auto 0;
+      background: rgba(238,155,0,0.06);
+      border: 1px solid rgba(238,155,0,0.2);
+      border-radius: 16px;
+      padding: 32px 36px;
+      text-align: center;
+    }
+    .admin-login-block .lock-icon { font-size: 2rem; margin-bottom: 12px; }
+    .admin-login-block h4 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--coral);
+    }
+    .admin-login-block p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .btn-admin {
+      display: inline-block;
+      padding: 12px 28px;
+      background: transparent;
+      border: 1px solid var(--coral);
+      color: var(--coral);
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: 0.5px;
+      transition: all 0.3s;
+    }
+    .btn-admin:hover {
+      background: var(--coral);
+      color: var(--deep-ocean);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(238,155,0,0.25);
+    }
+
+    /* ── CTA BANNER ── */
+    .cta-section {
+      background: linear-gradient(135deg, rgba(10,147,150,0.15), rgba(0,95,115,0.1));
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+      text-align: center;
+      padding: 80px 60px;
+    }
+    .cta-section h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+    .cta-section p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 500px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+    .cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: rgba(0,0,0,0.25);
+      border-top: 1px solid var(--glass-border);
+      padding: 40px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--accent-teal);
+    }
+    .footer-copy {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .footer-links {
+      display: flex; gap: 20px;
+    }
+    .footer-links a {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--accent-teal); }
+
+    @media (max-width: 900px) {
+      nav { padding: 16px 24px; }
+      section { padding: 70px 24px; }
+      .stats-bar { grid-template-columns: repeat(2,1fr); padding: 36px 24px; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .tech-grid { grid-template-columns: 1fr; }
+      .impact-grid { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: repeat(2,1fr); }      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a class="nav-logo" href="#">AQUANAUT <span>SYSTEMS</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#technology">Technology</a></li>
+    <li><a href="#impact">Impact</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="partner.html" class="nav-btn nav-btn-filled">Partner With Us</a></li>
+    <li><a href="register.html" class="nav-btn nav-btn-outline">Order a Fleet</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-tag"><div class="dot"></div> Autonomous Marine Robotics</div>
+    <h1>Restoring the purity of our <span class="accent">waterway</span><br>One Bot at a Time</h1>
+    <p>AquaNaut deploys fleets of AI-driven marine robots that autonomously collect waste, monitor pollution levels, and report real-time data from Nigeria's waterways.</p>
+    <div class="hero-btns">
+      <a href="#technology" class="btn-primary">See The Technology</a>
+      <a href="register.html" class="btn-secondary">Order a Fleet →</a>
+    </div>
+  </div>
+  <div class="scroll-hint">▼ SCROLL</div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-num">450m²</div>
+    <div class="stat-label">Coverage per Bot</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">24/7</div>
+    <div class="stat-label">Autonomous Operation</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">10</div>
+    <div class="stat-label">Bots per Fleet</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Manual Labour Needed</div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-grid">
+    <div class="about-img-wrap">
+      <div class="about-img-placeholder">
+        <div class="big-icon">⚓</div>
+        <span>AquaNaut Bot Render</span>
+      </div>
+    </div>
+    <div>
+      <div class="section-tag">Who We Are</div>
+      <h2 class="section-title">Built to tackle Global <span class="accent">Water Crisis</span></h2>
+      <p class="section-sub">Several countries loses billions of naira annually to waterway pollution. AquaNaut Systems was founded to solve this with autonomous robotics — bots that work around the clock, never tire, and report every kilogram of waste they collect directly to your dashboard.</p>
+      <div class="about-badges">
+        <span class="badge badge-teal">Pro-Climate</span>
+        <span class="badge badge-teal">Hardware + Software</span>
+        <span class="badge badge-sand">Marine Tech</span>
+        <span class="badge badge-sand">ESG Ready</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECHNOLOGY -->
+<section id="technology" class="tech-section">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-tag">How It Works</div>
+    <h2 class="section-title">The <span class="accent">Technology</span> Behind the Bot</h2>
+    <p class="section-sub">Each AquaNaut unit combines robotics, AI navigation, and IoT data reporting into a single waterproof system.</p>
+
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tech-icon">🤖</div>
+        <h3>Autonomous Navigation</h3>
+        <p>GPS-guided path planning with obstacle avoidance allows bots to cover their 450m² zone without any manual control.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🌊</div>
+        <h3>Waste Collection System</h3>
+        <p>Onboard conveyor and filtration system scoops floating debris, plastics, and organic waste into sealed holding tanks.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">📡</div>
+        <h3>Real-Time IoT Data</h3>
+        <p>Each bot reports its GPS location, waste collected, battery level, and water quality readings every 30 seconds via cellular.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🔋</div>
+        <h3>Solar + Battery Hybrid</h3>
+        <p>Solar panels keep each unit running for up to 18 hours per day. Auto-dock recharging ensures continuous operation.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">📊</div>
+        <h3>Live Dashboard</h3>
+        <p>Customers and admins access a real-time command centre showing bot locations, waste totals, and fleet health at a glance.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🛡️</div>
+        <h3>Weatherproof Design</h3>
+        <p>IP68-rated chassis built for tropical conditions — heavy rain, humidity, and tidal variation. Designed and tested in Lagos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT -->
+<section id="impact">
+  <div style="max-width:1200px;margin:0 auto;text-align:center;">
+    <div class="section-tag">Our Impact</div>
+    <h2 class="section-title">Numbers That <span class="accent">Matter</span></h2>
+    <p class="section-sub" style="margin:0 auto;">Every bot deployed is a step toward cleaner waterways, healthier ecosystems, and measurable ESG outcomes.</p>
+
+    <div class="impact-grid">
+      <div class="impact-card">
+        <div class="impact-num">450m²</div>
+        <div class="impact-label">Water surface cleaned<br>per bot per day</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">40kg</div>
+        <div class="impact-label">Average waste collected<br>per active bot daily</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">24/7</div>
+        <div class="impact-label">Autonomous operation<br>no human intervention</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="team-section">
+    <div class="section-tag">The People</div>
+    <h2 class="section-title">Meet the <span class="accent">Team</span></h2>
+    <p class="section-sub">A multidisciplinary team of engineers, marine scientists, and technologists building Nigeria's future in clean water.</p>
+
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar"><img src="Uzo.jpg" alt="Okezie Uzochukwu David"></div>
+        <div class="team-name">Okezie Uzochukwu David</div>
+        <div class="team-role">Founder & CEO</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar"><img src="Jude.jpg" alt="Nnanna Jude-Pius"></div>
+        <div class="team-name">Nnanna Jude-Pius</div>
+        <div class="team-role">Co-Founder & Chief Technology Officer</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar"><img src="Sika.jpg" alt="Sika Sotonye Florence"></div>
+        <div class="team-name">Sika Sotonye Florence</div>
+        <div class="team-role">Chief Operations Officer</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar"><img src="Ola.jpg" alt="Ibiyemi Olaoluwa David"></div>
+        <div class="team-name">Ibiyemi Olaoluwa David</div>
+        <div class="team-role">Chief Product Officer</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar"><img src="Mayo.jpg" alt="Omonona Mayokun"></div>
+        <div class="team-name">Omonona Mayokun</div>
+        <div class="team-role">Senior AI Engineer</div>
+      </div>
+    </div>
+
+    <!-- ADMIN LOGIN BLOCK -->
+    <div class="admin-login-block">
+      <div class="lock-icon">🔐</div>
+      <h4>AquaNaut Team Access</h4>
+      <p>This portal is exclusively for AquaNaut Systems administrators. Authorised team members can log in to access the full command centre, customer registry, and system analytics.</p>
+      <a href="login.html" class="btn-admin">Admin Login →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Ready to Deploy Your <span style="color:var(--accent-teal)">Fleet?</span></h2>
+  <p>Join private landowners, ESG corporations, and government agencies already using AquaNaut to restore Nigeria's waterways.</p>
+  <div class="cta-btns">
+    <a href="partner.html"  class="btn-primary">Partner With Us</a>
+    <a href="register.html" class="btn-secondary">Create an Account</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">AQUANAUT</div>
+  <div class="footer-copy">© 2025 AquaNaut Systems · Lagos, Nigeria · All Rights Reserved</div>
+  <div class="footer-links">
+    <a href="#about">About</a>
+    <a href="#technology">Technology</a>
+    <a href="partner.html">Partner</a>
+    <a href="register.html">Register</a>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard | AquaNaut Systems</title>
+<link rel="icon" type="image/png" href="Logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+  --ocean-deep:   #001219;
+  --ocean-mid:    #005f73;
+  --teal:         #0a9396;
+  --teal-light:   #94d2bd;
+  --sand:         #e9d8a6;
+  --bg:           #f0f4f6;
+  --sidebar-w:    260px;
+  --text:         #0d1b21;
+  --text-muted:   #6b8a93;
+  --card-bg:      #ffffff;
+  --border:       rgba(0,0,0,0.07);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--ocean-deep);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.sidebar-glow {
+  position: absolute;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(10,147,150,0.15) 0%, transparent 70%);
+  top: -50px; left: -50px;
+  pointer-events: none;
+}
+
+.sidebar-logo {
+  padding: 28px 24px 24px;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--teal);
+  letter-spacing: 1.5px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  position: relative;
+}
+.sidebar-logo span { color: rgba(255,255,255,0.3); font-weight: 400; font-size: 0.75rem; display: block; margin-top: 2px; letter-spacing: 0.5px; }
+
+.sidebar-user {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  position: relative;
+}
+.user-avatar {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--ocean-mid));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: white;
+  margin-bottom: 10px;
+}
+.user-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.user-type {
+  font-size: 0.72rem;
+  color: var(--teal-light);
+  margin-top: 2px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 0;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+.nav-item:hover { color: white; background: rgba(255,255,255,0.04); }
+.nav-item.active {
+  color: var(--teal-light);
+  background: rgba(10,147,150,0.1);
+  border-left-color: var(--teal);
+}
+.nav-item .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+.sidebar-bottom {
+  padding: 20px 24px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.logout-btn {
+  width: 100%;
+  padding: 11px;
+  background: transparent;
+  border: 1px solid rgba(10,147,150,0.3);
+  color: var(--teal-light);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.83rem;
+  transition: all 0.25s;
+}
+.logout-btn:hover { background: rgba(10,147,150,0.12); border-color: var(--teal); }
+
+/* MAIN */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ocean-deep);
+}
+.topbar-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
+
+.live-badge {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(10,147,150,0.08);
+  border: 1px solid rgba(10,147,150,0.2);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  color: var(--teal);
+  font-weight: 500;
+}
+.live-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--teal);
+  animation: livepulse 1.5s ease-in-out infinite;
+}
+@keyframes livepulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(0.8);} }
+
+.content { padding: 28px 32px; flex: 1; }
+
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 14px;
+  margin-top: 28px;
+}
+.section-label:first-child { margin-top: 0; }
+
+/* STAT CARDS */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  background: var(--card-bg);
+  border-radius: 14px;
+  padding: 22px 20px;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,0.08); }
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--teal), var(--teal-light));
+}
+
+.stat-card .s-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: rgba(10,147,150,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  margin-bottom: 14px;
+}
+.stat-card .s-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--ocean-deep);
+  line-height: 1;
+}
+.stat-card .s-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 5px;
+}
+
+/* TWO COLUMN GRID */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* PANEL */
+.panel {
+  background: var(--card-bg);
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.panel-head {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.panel-head h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ocean-deep);
+}
+.panel-head .count-badge {
+  background: rgba(10,147,150,0.1);
+  color: var(--teal);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.panel-body { padding: 20px 22px; }
+
+#map { height: 320px; }
+
+/* BOT TABLE */
+.bot-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.bot-table thead th {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.bot-table tbody td {
+  padding: 11px 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  vertical-align: middle;
+}
+.bot-table tbody tr:last-child td { border-bottom: none; }
+.bot-table tbody tr:hover td { background: rgba(10,147,150,0.03); }
+
+.bot-id {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--ocean-mid);
+  font-weight: 500;
+}
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.status-pill.active   { background: #dcfce7; color: #166534; }
+.status-pill.inactive { background: #fef3c7; color: #92400e; }
+.status-pill .s-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+}
+.status-pill.active .s-dot   { background: #16a34a; }
+.status-pill.inactive .s-dot { background: #d97706; }
+
+.waste-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ocean-deep);
+}
+
+/* WASTE CHART */
+.chart-wrap { height: 220px; position: relative; }
+
+/* LOADING OVERLAY */
+.loading-overlay {
+  position: fixed; inset: 0;
+  background: var(--ocean-deep);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.5s;
+}
+.loading-overlay.hide { opacity: 0; pointer-events: none; }
+.loader-ring {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  border: 3px solid rgba(10,147,150,0.2);
+  border-top-color: var(--teal);
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-overlay p {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.85rem;
+  font-family: 'DM Sans', sans-serif;
+}
+
+@media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 860px) {
+  .sidebar { transform: translateX(-100%); }
+  .main { margin-left: 0; }
+  .two-col { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loader">
+  <div class="loader-ring"></div>
+  <p>Loading your fleet...</p>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-glow"></div>
+  <div class="sidebar-logo">AQUANAUT <span>COMMAND CENTRE</span></div>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="userInitials">--</div>
+    <div class="user-name" id="userName">Loading...</div>
+    <div class="user-type" id="userType">--</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item active"><span class="nav-icon">📊</span> Overview</div>
+    <div class="nav-item"><span class="nav-icon">🤖</span> My Fleet</div>
+    <div class="nav-item"><span class="nav-icon">🗺️</span> Bot Map</div>
+    <div class="nav-item"><span class="nav-icon">📈</span> Analytics</div>
+  </nav>
+  <div class="sidebar-bottom">
+    <button class="logout-btn" onclick="logout()">Sign Out</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Fleet Overview</div>
+      <div class="topbar-sub" id="topbarSub">Loading data...</div>
+    </div>
+    <div class="live-badge"><div class="live-dot"></div> Live Data</div>
+  </div>
+
+  <div class="content">
+
+    <!-- STAT CARDS -->
+    <div class="section-label">Your Fleet at a Glance</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="s-icon">🤖</div>
+        <div class="s-val" id="statTotalBots">--</div>
+        <div class="s-label">Total Bots Purchased</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-icon">✅</div>
+        <div class="s-val" id="statActive">--</div>
+        <div class="s-label">Active Bots</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-icon">🌊</div>
+        <div class="s-val" id="statWaste">--</div>
+        <div class="s-label">Total Waste Collected (kg)</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-icon">📐</div>
+        <div class="s-val" id="statCoverage">--</div>
+        <div class="s-label">Water Coverage (m²)</div>
+      </div>
+    </div>
+
+    <!-- MAP + CHART -->
+    <div class="section-label">Fleet Monitor</div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>🗺️ Bot Locations</h3>
+          <span class="count-badge" id="mapBadge">-- bots</span>
+        </div>
+        <div id="map"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>📈 Waste per Bot</h3>
+          <span class="count-badge" id="chartBadge">Active only</span>
+        </div>
+        <div class="panel-body">
+          <div class="chart-wrap">
+            <canvas id="wasteChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOT TABLE -->
+    <div class="section-label">Bot Fleet Detail</div>
+    <div class="panel">
+      <div class="panel-head">
+        <h3>🤖 All Bots</h3>
+        <span class="count-badge" id="tableBadge">-- units</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="bot-table">
+          <thead>
+            <tr>
+              <th>Bot ID</th>
+              <th>Status</th>
+              <th>Waste Collected</th>
+              <th>Coverage</th>
+              <th>Location</th>
+            </tr>
+          </thead>
+          <tbody id="botTableBody">
+            <tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">Loading bots...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// AUTH GUARD
+const token = localStorage.getItem("token");
+const role  = localStorage.getItem("role");
+const name  = localStorage.getItem("name");
+if (!token || role !== "customer") {
+  window.location.href = "login.html";
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "login.html";
+}
+
+// CUSTOMER TYPE LABELS
+const typeLabels = {
+  private_waterfront: "Private Waterfront",
+  esg_corporation:    "ESG Corporation",
+  government:         "Government"
+};
+
+// ANIMATE NUMBER
+function animateNum(el, target, decimals = 0, suffix = "") {
+  const dur = 1200, start = performance.now();
+  function step(now) {
+    const p   = Math.min((now - start) / dur, 1);
+    const val = target * (1 - Math.pow(1 - p, 3));
+    el.textContent = val.toFixed(decimals) + suffix;
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = target.toFixed(decimals) + suffix;
+  }
+  requestAnimationFrame(step);
+}
+
+// MAP
+const map = L.map("map", { zoomControl: true }).setView([6.5244, 3.3792], 12);
+L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+  attribution: "© CartoDB"
+}).addTo(map);
+
+function makeMarker(bot) {
+  const color = bot.status === "active" ? "#0a9396" : "#d97706";
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+    <circle cx="14" cy="14" r="10" fill="${color}" opacity="0.25"/>
+    <circle cx="14" cy="14" r="6" fill="${color}"/>
+    <circle cx="14" cy="14" r="3" fill="white"/>
+  </svg>`;
+  return L.divIcon({
+    html: svg,
+    className: "",
+    iconSize: [28, 28],
+    iconAnchor: [14, 14]
+  });
+}
+
+let wasteChartInstance = null;
+
+async function loadDashboard() {
+  try {
+    const res  = await fetch("http://localhost:5000/my-dashboard", {
+      headers: { Authorization: token }
+    });
+    const data = await res.json();
+
+    // User info
+    document.getElementById("userName").textContent    = name || data.name;
+    document.getElementById("userType").textContent    = typeLabels[data.customerType] || data.customerType;
+    document.getElementById("userInitials").textContent = (name || data.name || "?").split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase();
+    document.getElementById("topbarSub").textContent   = `${data.fleets} fleet(s) · ${data.totalBots} bots · Last updated just now`;
+
+    // Stat cards
+    animateNum(document.getElementById("statTotalBots"), data.totalBots);
+    animateNum(document.getElementById("statActive"),    data.activeBots);
+    animateNum(document.getElementById("statWaste"),     data.totalWaste, 1);
+    animateNum(document.getElementById("statCoverage"),  data.coverageM2);
+
+    // Badges
+    document.getElementById("mapBadge").textContent   = `${data.bots.length} bots`;
+    document.getElementById("tableBadge").textContent = `${data.totalBots} units`;
+
+    // Map markers
+    data.bots.forEach(bot => {
+      L.marker([bot.location.lat, bot.location.lng], { icon: makeMarker(bot) })
+        .addTo(map)
+        .bindPopup(
+          `<b style="font-family:monospace;font-size:0.75rem;">${bot.botId}</b><br>
+           Status: <b>${bot.status}</b><br>
+           Waste: <b>${bot.wasteCollected} kg</b>`
+        );
+    });
+
+    // Chart — active bots only
+    const activeBots = data.bots.filter(b => b.status === "active").slice(0, 15);
+    const labels     = activeBots.map(b => b.botId.split("-").pop());
+    const values     = activeBots.map(b => b.wasteCollected);
+
+    if (wasteChartInstance) wasteChartInstance.destroy();
+    wasteChartInstance = new Chart(document.getElementById("wasteChart"), {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{
+          data:            values,
+          backgroundColor: "rgba(10,147,150,0.7)",
+          borderColor:     "rgba(10,147,150,1)",
+          borderWidth:     1,
+          borderRadius:    4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { font: { size: 9 }, color: "#6b8a93" }, grid: { display: false } },
+          y: { beginAtZero: true, ticks: { color: "#6b8a93", font: { size: 9 } }, grid: { color: "rgba(0,0,0,0.05)" } }
+        }
+      }
+    });
+
+    // Bot table
+    const tbody = document.getElementById("botTableBody");
+    tbody.innerHTML = "";
+    data.bots.forEach(bot => {
+      const isActive = bot.status === "active";
+      tbody.innerHTML += `
+        <tr>
+          <td><span class="bot-id">${bot.botId}</span></td>
+          <td>
+            <span class="status-pill ${bot.status}">
+              <span class="s-dot"></span>
+              ${isActive ? "Active" : "Inactive"}
+            </span>
+          </td>
+          <td><span class="waste-val">${isActive ? bot.wasteCollected + " kg" : "—"}</span></td>
+          <td><span class="waste-val">450 m²</span></td>
+          <td><span style="font-size:0.75rem;color:var(--text-muted);">${bot.location.lat.toFixed(4)}°N, ${bot.location.lng.toFixed(4)}°E</span></td>
+        </tr>
+      `;
+    });
+
+    // Hide loader
+    const loader = document.getElementById("loader");
+    loader.classList.add("hide");
+    setTimeout(() => loader.remove(), 600);
+
+  } catch (err) {
+    console.error("Dashboard error:", err);
+    document.getElementById("loader").querySelector("p").textContent = "Failed to load data. Is the server running?";
+  }
+}
+
+loadDashboard();
+// Auto-refresh every 60 seconds
+setInterval(loadDashboard, 60000);
+</script>
+</body>
+</html>
