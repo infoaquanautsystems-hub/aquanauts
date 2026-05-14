@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In | AquaNaut Systems</title>
+<link rel="icon" type="image/png" href="Logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ocean-deep:   #001219;
+  --ocean-mid:    #005f73;
+  --teal:         #0a9396;
+  --teal-light:   #94d2bd;
+  --glass:        rgba(255,255,255,0.05);
+  --glass-border: rgba(10,147,150,0.22);
+  --text:         #ffffff;
+  --text-muted:   rgba(255,255,255,0.42);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--ocean-deep);
+  min-height: 100vh;
+  color: var(--text);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* BG EFFECTS */
+.bg-left {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, #001a26 0%, #003444 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 50px;
+}
+
+.bg-left::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 30% 30%, rgba(10,147,150,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 70% at 80% 80%, rgba(0,95,115,0.2) 0%, transparent 70%);
+}
+
+.ocean-grid {
+  position: absolute; inset: 0; opacity: 0.06;
+  background-image:
+    linear-gradient(rgba(10,147,150,1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10,147,150,1) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.left-content { position: relative; z-index: 1; }
+
+.logo {
+  position: absolute;
+  top: 50px; left: 50px;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--teal);
+  letter-spacing: 2px;
+  z-index: 1;
+}
+.logo span { color: var(--text-muted); font-weight: 400; }
+
+.bot-visual {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  text-align: center;
+}
+
+.bot-ring {
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  border: 1px solid rgba(10,147,150,0.2);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  animation: spin 20s linear infinite;
+}
+.bot-ring::before {
+  content: '';
+  position: absolute;
+  width: 8px; height: 8px;
+  background: var(--teal);
+  border-radius: 50%;
+  top: -4px; left: 50%;
+  box-shadow: 0 0 12px var(--teal);
+}
+.bot-ring-inner {
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  border: 1px solid rgba(10,147,150,0.15);
+  display: flex; align-items: center; justify-content: center;
+  animation: spin 12s linear infinite reverse;
+  position: relative;
+}
+.bot-ring-inner::before {
+  content: '';
+  position: absolute;
+  width: 6px; height: 6px;
+  background: var(--teal-light);
+  border-radius: 50%;
+  top: -3px; left: 50%;
+  box-shadow: 0 0 8px var(--teal-light);
+}
+.bot-icon {
+  font-size: 2.8rem;
+  animation: spin 12s linear infinite;
+}
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.stat-pills {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.pill {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  border-radius: 30px;
+  padding: 8px 16px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  color: var(--teal-light);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pill .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 6px var(--teal);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+.left-bottom { position: relative; z-index: 1; }
+.left-bottom h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.left-bottom h2 em { font-style: normal; color: var(--teal); }
+.left-bottom p {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  max-width: 340px;
+}
+
+/* RIGHT — FORM */
+.right-panel {
+  background: var(--ocean-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 60px;
+  position: relative;
+}
+
+.right-panel::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 80% 20%, rgba(10,147,150,0.07) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 400px;
+  position: relative; z-index: 1;
+  animation: slideIn 0.5s ease both;
+}
+@keyframes slideIn {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.form-card h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+.form-card .sub {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 36px;
+}
+.form-card .sub a { color: var(--teal); text-decoration: none; }
+
+.success-banner {
+  background: rgba(10,147,150,0.12);
+  border: 1px solid rgba(10,147,150,0.3);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.83rem;
+  color: var(--teal-light);
+  margin-bottom: 20px;
+  display: none;
+}
+.success-banner.show { display: block; }
+
+.field { margin-bottom: 18px; }
+.field label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  margin-bottom: 8px;
+}
+
+.input-wrap { position: relative; }
+.field input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  transition: all 0.25s;
+}
+.field input::placeholder { color: var(--text-muted); }
+.field input:focus {
+  outline: none;
+  border-color: var(--teal);
+  background: rgba(10,147,150,0.07);
+  box-shadow: 0 0 0 3px rgba(10,147,150,0.12);
+}
+
+.toggle-pass {
+  position: absolute;
+  right: 14px; top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  user-select: none;
+  transition: color 0.2s;
+}
+.toggle-pass:hover { color: var(--teal); }
+
+.submit-btn {
+  width: 100%;
+  padding: 15px;
+  background: var(--teal);
+  border: none;
+  color: white;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 6px;
+}
+.submit-btn:hover:not(:disabled) {
+  background: var(--ocean-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(10,147,150,0.3);
+}
+.submit-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+
+.error-msg {
+  color: #ff6b6b;
+  font-size: 0.82rem;
+  margin-top: 14px;
+  text-align: center;
+  min-height: 18px;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.83rem;
+  color: var(--text-muted);
+}
+.register-link a { color: var(--teal); text-decoration: none; }
+
+.footer-note {
+  margin-top: 40px;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.18);
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  body { grid-template-columns: 1fr; }
+  .bg-left { display: none; }
+  .right-panel { padding: 60px 24px; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- LEFT VISUAL -->
+<div class="bg-left">
+  <div class="ocean-grid"></div>
+  <div class="logo">AQUANAUT <span>SYSTEMS</span></div>
+
+  <div class="bot-visual">
+    <div class="bot-ring">
+      <div class="bot-ring-inner">
+        <div class="bot-icon">⚓</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-pills">
+    <div class="pill"><div class="dot"></div> 3 Bots Active</div>
+    <div class="pill"><div class="dot"></div> 36.5kg Collected</div>
+    <div class="pill"><div class="dot"></div> GPS Live</div>
+  </div>
+
+  <div class="left-bottom">
+    <h2>Your Fleet.<br><em>Always On.</em></h2>
+    <p>Monitor waste collection, track bot positions, and manage your entire AquaNaut deployment from one command centre.</p>
+  </div>
+</div>
+
+<!-- RIGHT FORM -->
+<div class="right-panel">
+  <div class="form-card">
+    <h2>Welcome Back</h2>
+    <p class="sub">No account yet? <a href="register.html">Create one free</a></p>
+
+    <div class="success-banner" id="successBanner">
+      ✅ Account created successfully! You can now sign in.
+    </div>
+
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <div class="input-wrap">
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+        <span class="toggle-pass" onclick="togglePass()">Show</span>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+    <p class="error-msg" id="errorMsg"></p>
+
+    <div class="register-link">
+      Don't have an account? <a href="register.html">Get started →</a>
+    </div>
+
+    <p class="footer-note">© 2025 AquaNaut Systems · Lagos, Nigeria</p>
+  </div>
+</div>
+
+<script>
+// Show success banner if coming from registration
+if (new URLSearchParams(window.location.search).get("registered") === "true") {
+  document.getElementById("successBanner").classList.add("show");
+}
+
+function togglePass() {
+  const inp  = document.getElementById("password");
+  const span = document.querySelector(".toggle-pass");
+  if (inp.type === "password") { inp.type = "text";     span.textContent = "Hide"; }
+  else                         { inp.type = "password"; span.textContent = "Show"; }
+}
+
+document.addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+
+async function doLogin() {
+  const email    = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const btn      = document.getElementById("loginBtn");
+  const errMsg   = document.getElementById("errorMsg");
+
+  errMsg.textContent = "";
+
+  if (!email || !password) { errMsg.textContent = "Please fill in all fields."; return; }
+
+  btn.disabled    = true;
+  btn.textContent = "Signing in...";
+
+  try {
+    const res  = await fetch("https://aquanaut-backend1.onrender.com/login", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role",  data.role);
+      localStorage.setItem("name",  data.name);
+
+      if (data.role === "admin") {
+        window.location.href = "admin-dashboard.html";
+      } else {
+        window.location.href = "customer-dashboard.html";
+      }
+    } else {
+      errMsg.textContent  = data.message || "Invalid email or password.";
+      btn.disabled        = false;
+      btn.textContent     = "Sign In";
+    }
+  } catch (err) {
+    errMsg.textContent = "Cannot connect to server. Make sure it is running.";
+    btn.disabled       = false;
+    btn.textContent    = "Sign In";
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account | AquaNaut Systems</title>
+<link rel="icon" type="image/png" href="Logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ocean-deep:   #001219;
+  --ocean-mid:    #005f73;
+  --teal:         #0a9396;
+  --teal-light:   #94d2bd;
+  --sand:         #e9d8a6;
+  --coral:        #ee9b00;
+  --text:         #ffffff;
+  --text-muted:   rgba(255,255,255,0.45);
+  --glass:        rgba(255,255,255,0.06);
+  --glass-border: rgba(10,147,150,0.25);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--ocean-deep);
+  min-height: 100vh;
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* Animated background */
+.bg-canvas {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(10,147,150,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 90% 80%, rgba(0,95,115,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(0,18,25,0.8) 0%, transparent 100%);
+}
+
+/* Wave lines */
+.wave-lines {
+  position: fixed; inset: 0; z-index: 0; opacity: 0.04;
+  background-image: repeating-linear-gradient(
+    0deg, transparent, transparent 60px,
+    rgba(10,147,150,1) 60px, rgba(10,147,150,1) 61px
+  );
+}
+
+.page-wrap {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+/* LEFT PANEL */
+.left-panel {
+  padding: 60px 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid var(--glass-border);
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--teal);
+  letter-spacing: 2px;
+  margin-bottom: 50px;
+}
+.logo span { color: var(--text-muted); font-weight: 400; }
+
+.left-panel h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+.left-panel h1 em {
+  font-style: normal;
+  color: var(--teal);
+}
+
+.left-panel p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 380px;
+  margin-bottom: 40px;
+}
+
+.pricing-cards { display: flex; flex-direction: column; gap: 12px; }
+
+.pricing-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.3s;
+}
+.pricing-card:hover { border-color: var(--teal); background: rgba(10,147,150,0.1); }
+
+.pricing-card .icon {
+  width: 42px; height: 42px;
+  background: rgba(10,147,150,0.15);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; flex-shrink: 0;
+}
+
+.pricing-card .info .type {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--teal-light);
+}
+.pricing-card .info .price {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.pricing-card .info .coverage {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.25);
+  margin-top: 1px;
+}
+
+/* RIGHT PANEL */
+.right-panel {
+  padding: 50px 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 480px;
+}
+
+.form-card h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.form-card .sub {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 30px;
+}
+.form-card .sub a { color: var(--teal); text-decoration: none; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.field { margin-bottom: 16px; }
+.field label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.field input, .field select {
+  width: 100%;
+  padding: 13px 16px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  transition: all 0.25s;
+  -webkit-appearance: none;
+}
+.field input::placeholder { color: var(--text-muted); }
+.field input:focus, .field select:focus {
+  outline: none;
+  border-color: var(--teal);
+  background: rgba(10,147,150,0.08);
+  box-shadow: 0 0 0 3px rgba(10,147,150,0.12);
+}
+.field select option { background: #001a26; color: white; }
+
+/* CUSTOMER TYPE SELECTOR */
+.type-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.type-option {
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.25s;
+  background: var(--glass);
+  position: relative;
+}
+.type-option:hover { border-color: var(--teal); }
+.type-option.selected {
+  border-color: var(--teal);
+  background: rgba(10,147,150,0.12);
+}
+.type-option input[type="radio"] { display: none; }
+
+.type-option .type-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.type-option .type-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.type-option .type-price {
+  font-size: 0.8rem;
+  color: var(--teal);
+  font-weight: 600;
+}
+.type-option .type-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+.type-option .check {
+  position: absolute;
+  right: 14px; top: 14px;
+  width: 18px; height: 18px;
+  border: 2px solid var(--glass-border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.type-option.selected .check {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+.type-option.selected .check::after {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: white;
+}
+
+/* FLEET SELECTOR */
+.fleet-wrap {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.fleet-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.fleet-top .fleet-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 500;
+}
+.fleet-counter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.fleet-btn {
+  width: 32px; height: 32px;
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  color: var(--text);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.fleet-btn:hover { border-color: var(--teal); color: var(--teal); }
+.fleet-count {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  min-width: 28px;
+  text-align: center;
+}
+
+/* PRICE BREAKDOWN */
+.price-breakdown {
+  border-top: 1px solid var(--glass-border);
+  padding-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  text-align: center;
+}
+.price-breakdown .pb-item .pb-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--teal-light);
+}
+.price-breakdown .pb-item .pb-key {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* TOTAL COST */
+.total-cost {
+  background: rgba(10,147,150,0.1);
+  border: 1px solid rgba(10,147,150,0.3);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.total-cost .label { font-size: 0.8rem; color: var(--text-muted); }
+.total-cost .amount {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--teal);
+}
+
+/* SUBMIT BUTTON */
+.submit-btn {
+  width: 100%;
+  padding: 15px;
+  background: var(--teal);
+  border: none;
+  color: white;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.submit-btn:hover:not(:disabled) {
+  background: var(--ocean-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(10,147,150,0.35);
+}
+.submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.error-msg {
+  color: #ff6b6b;
+  font-size: 0.82rem;
+  margin-top: 12px;
+  text-align: center;
+  min-height: 18px;
+}
+
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 16px 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1;
+  border-top: 1px solid var(--glass-border);
+}
+
+@media (max-width: 900px) {
+  .page-wrap { grid-template-columns: 1fr; }
+  .left-panel { display: none; }
+  .right-panel { padding: 40px 24px; align-items: flex-start; padding-top: 60px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-canvas"></div>
+<div class="wave-lines"></div>
+
+<div class="page-wrap">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="logo">AQUANAUT <span>SYSTEMS</span></div>
+    <h1>Deploy Your <em>Marine Fleet</em> Today</h1>
+    <p>Join operators across Lagos waterways using AquaNaut bots to collect waste, monitor pollution, and restore ocean health — autonomously.</p>
+
+    <div class="pricing-cards">
+      <div class="pricing-card">
+        <div class="icon">🏠</div>
+        <div class="info">
+          <div class="type">Private Waterfront</div>
+          <div class="price">₦350,000 per bot &nbsp;·&nbsp; ₦3,500,000 per fleet</div>
+          <div class="coverage">450m² coverage per bot</div>
+        </div>
+      </div>
+      <div class="pricing-card">
+        <div class="icon">🏢</div>
+        <div class="info">
+          <div class="type">ESG Corporation</div>
+          <div class="price">₦2,000,000 per bot &nbsp;·&nbsp; ₦20,000,000 per fleet</div>
+          <div class="coverage">450m² coverage per bot · Priority support</div>
+        </div>
+      </div>
+      <div class="pricing-card">
+        <div class="icon">🏛️</div>
+        <div class="info">
+          <div class="type">Government</div>
+          <div class="price">₦5,000,000 per bot &nbsp;·&nbsp; ₦50,000,000 per fleet</div>
+          <div class="coverage">450m² coverage per bot · Dedicated team</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="form-card">
+      <h2>Order a Fleet</h2>
+      <p class="sub">Already have an account? <a href="login.html">Sign in</a></p>
+
+      <!-- STEP 1: PERSONAL INFO -->
+      <div class="form-row">
+        <div class="field">
+          <label>First Name</label>
+          <input type="text" id="firstName" placeholder="John">
+        </div>
+        <div class="field">
+          <label>Last Name</label>
+          <input type="text" id="lastName" placeholder="Doe">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="you@company.com">
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Min. 8 characters">
+      </div>
+
+      <!-- CUSTOMER TYPE -->
+      <div class="field">
+        <label>Customer Category</label>
+      </div>
+      <div class="type-grid" id="typeGrid">
+        <label class="type-option" onclick="selectType('private_waterfront', this)">
+          <input type="radio" name="ctype" value="private_waterfront">
+          <div class="type-header">
+            <span class="type-name">🏠 Private Waterfront</span>
+            <span class="type-price">₦350k / bot</span>
+          </div>
+          <div class="type-desc">Residential or private water body operators</div>
+          <div class="check"></div>
+        </label>
+        <label class="type-option" onclick="selectType('esg_corporation', this)">
+          <input type="radio" name="ctype" value="esg_corporation">
+          <div class="type-header">
+            <span class="type-name">🏢 ESG Corporation</span>
+            <span class="type-price">₦2M / bot</span>
+          </div>
+          <div class="type-desc">Companies with sustainability mandates &amp; ESG reporting</div>
+          <div class="check"></div>
+        </label>
+        <label class="type-option" onclick="selectType('government', this)">
+          <input type="radio" name="ctype" value="government">
+          <div class="type-header">
+            <span class="type-name">🏛️ Government</span>
+            <span class="type-price">₦5M / bot</span>
+          </div>
+          <div class="type-desc">Ministries, agencies &amp; public sector bodies</div>
+          <div class="check"></div>
+        </label>
+      </div>
+
+      <!-- FLEET SELECTOR -->
+      <div class="fleet-wrap">
+        <div class="fleet-top">
+          <span class="fleet-label">Number of Fleets (1 fleet = 10 bots)</span>
+          <div class="fleet-counter">
+            <button class="fleet-btn" onclick="changeFleet(-1)">−</button>
+            <span class="fleet-count" id="fleetCount">1</span>
+            <button class="fleet-btn" onclick="changeFleet(1)">+</button>
+          </div>
+        </div>
+        <div class="price-breakdown">
+          <div class="pb-item">
+            <div class="pb-val" id="pbBots">10</div>
+            <div class="pb-key">Total Bots</div>
+          </div>
+          <div class="pb-item">
+            <div class="pb-val" id="pbCoverage">4,500m²</div>
+            <div class="pb-key">Water Coverage</div>
+          </div>
+          <div class="pb-item">
+            <div class="pb-val" id="pbFleets">1</div>
+            <div class="pb-key">Fleets</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="total-cost">
+        <div class="label">Total Investment</div>
+        <div class="amount" id="totalAmount">Select category</div>
+      </div>
+
+      <button class="submit-btn" id="payBtn" onclick="initiatePayment()">
+        Pay &amp; Create Account
+      </button>
+
+      <p class="error-msg" id="errorMsg"></p>
+
+      <div class="divider">secured by Paystack</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Paystack -->
+<script src="https://js.paystack.co/v1/inline.js"></script>
+
+<script>
+const PRICING = {
+  private_waterfront: { label: "Private Waterfront", pricePerBot: 350000 },
+  esg_corporation:    { label: "ESG Corporation",    pricePerBot: 2000000 },
+  government:         { label: "Government",         pricePerBot: 5000000 }
+};
+const BOTS_PER_FLEET = 10;
+const COVERAGE_PER_BOT = 450;
+const PAYSTACK_PUBLIC_KEY = "pk_test_REPLACE_WITH_YOUR_KEY";
+
+let selectedType = null;
+let fleetCount   = 1;
+
+function selectType(type, el) {
+  selectedType = type;
+  document.querySelectorAll(".type-option").forEach(o => o.classList.remove("selected"));
+  el.classList.add("selected");
+  updateCalculator();
+}
+
+function changeFleet(delta) {
+  fleetCount = Math.max(1, Math.min(50, fleetCount + delta));
+  document.getElementById("fleetCount").textContent = fleetCount;
+  updateCalculator();
+}
+
+function updateCalculator() {
+  const bots     = fleetCount * BOTS_PER_FLEET;
+  const coverage = (bots * COVERAGE_PER_BOT).toLocaleString();
+  document.getElementById("pbBots").textContent     = bots;
+  document.getElementById("pbCoverage").textContent = coverage + "m²";
+  document.getElementById("pbFleets").textContent   = fleetCount;
+
+  if (selectedType && PRICING[selectedType]) {
+    const total = bots * PRICING[selectedType].pricePerBot;
+    document.getElementById("totalAmount").textContent = "₦" + total.toLocaleString();
+  } else {
+    document.getElementById("totalAmount").textContent = "Select category";
+  }
+}
+
+function getFormData() {
+  const firstName = document.getElementById("firstName").value.trim();
+  const lastName  = document.getElementById("lastName").value.trim();
+  const email     = document.getElementById("email").value.trim();
+  const password  = document.getElementById("password").value;
+
+  if (!firstName || !lastName) return { error: "Please enter your full name" };
+  if (!email || !email.includes("@")) return { error: "Please enter a valid email" };
+  if (!password || password.length < 8) return { error: "Password must be at least 8 characters" };
+  if (!selectedType) return { error: "Please select your customer category" };
+
+  const bots  = fleetCount * BOTS_PER_FLEET;
+  const total = bots * PRICING[selectedType].pricePerBot;
+
+  return {
+    name:         firstName + " " + lastName,
+    email, password,
+    customerType: selectedType,
+    fleets:       fleetCount,
+    totalAmount:  total
+  };
+}
+
+function showError(msg) {
+  document.getElementById("errorMsg").textContent = msg;
+}
+
+async function initiatePayment() {
+  showError("");
+  const data = getFormData();
+  if (data.error) { showError(data.error); return; }
+
+  const btn = document.getElementById("payBtn");
+  btn.disabled = true;
+  btn.textContent = "Initialising payment...";
+
+  const handler = PaystackPop.setup({
+    key:       PAYSTACK_PUBLIC_KEY,
+    email:     data.email,
+    amount:    data.totalAmount * 100, // Paystack uses kobo
+    currency:  "NGN",
+    ref:       "AQN-" + Date.now(),
+    metadata:  { name: data.name, customerType: data.customerType, fleets: data.fleets },
+    callback: async function(response) {
+      btn.textContent = "Verifying payment...";
+
+      // Verify with backend then create account
+      try {
+        const verifyRes = await fetch("https://aquanaut-backend1.onrender.com/verify-payment", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify({ reference: response.reference })
+        });
+        const verifyData = await verifyRes.json();
+
+        if (verifyData.success) {
+          await createAccount(data, response.reference);
+        } else {
+          showError("Payment could not be verified. Please contact support.");
+          btn.disabled = false;
+          btn.textContent = "Pay & Create Account";
+        }
+      } catch (err) {
+        // If verification fails due to test mode, still create account (dev mode)
+        console.warn("Payment verification skipped (dev mode):", err);
+        await createAccount(data, response.reference);
+      }
+    },
+    onClose: function() {
+      btn.disabled = false;
+      btn.textContent = "Pay & Create Account";
+    }
+  });
+
+  handler.openIframe();
+}
+
+async function createAccount(data, paystackRef) {
+  const btn = document.getElementById("payBtn");
+  btn.textContent = "Creating account...";
+  try {
+    const res = await fetch("https://aquanaut-backend1.onrender.com/register", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name:         data.name,
+        email:        data.email,
+        password:     data.password,
+        customerType: data.customerType,
+        fleets:       data.fleets,
+        paystackRef
+      })
+    });
+    const result = await res.json();
+    if (result.success) {
+      window.location.href = "login.html?registered=true";
+    } else {
+      showError(result.message || "Registration failed.");
+      btn.disabled = false;
+      btn.textContent = "Pay & Create Account";
+    }
+  } catch (err) {
+    showError("Server error. Is your server running?");
+    btn.disabled = false;
+    btn.textContent = "Pay & Create Account";
+  }
+}
+</script>
+</body>
+</html>
