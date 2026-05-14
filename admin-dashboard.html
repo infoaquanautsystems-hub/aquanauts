@@ -4,706 +4,990 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Command Centre | AquaNaut Systems</title>
-<link rel="icon" type="image/png" href="Logo.png">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-:root {
-  --ocean-deep:   #001219;
-  --ocean-mid:    #005f73;
-  --teal:         #0a9396;
-  --teal-light:   #94d2bd;
-  --coral:        #ee9b00;
-  --bg:           #f0f4f6;
-  --sidebar-w:    270px;
-  --text:         #0d1b21;
-  --text-muted:   #6b8a93;
-  --card-bg:      #ffffff;
-  --border:       rgba(0,0,0,0.07);
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0a1628;
+  --navy-light:#0d1f3c;
+  --navy-mid:#122040;
+  --teal:#00c896;
+  --teal-dim:#00a87a;
+  --teal-glow:rgba(0,200,150,0.12);
+  --amber:#f59e0b;
+  --amber-dim:rgba(245,158,11,0.15);
+  --blue:#3b82f6;
+  --blue-dim:rgba(59,130,246,0.15);
+  --red:#ef4444;
+  --red-dim:rgba(239,68,68,0.15);
+  --text-primary:#e8edf5;
+  --text-secondary:#8a9bc4;
+  --text-muted:#4a5a7a;
+  --border:#1e3058;
+  --border-light:#243660;
+  --card-bg:#0f1d38;
+  --card-hover:#122040;
+  --sidebar-w:240px;
 }
-
-* { margin:0; padding:0; box-sizing:border-box; }
-
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  display: flex;
-  min-height: 100vh;
-}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--text-primary);min-height:100vh;display:flex;overflow:hidden}
 
 /* ── SIDEBAR ── */
-.sidebar {
-  width: var(--sidebar-w);
-  background: var(--ocean-deep);
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top:0; left:0; bottom:0;
-  z-index: 100;
-  overflow: hidden;
+#sidebar{
+  width:var(--sidebar-w);min-width:var(--sidebar-w);
+  background:var(--navy-light);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  height:100vh;position:fixed;left:0;top:0;z-index:100;
+  transition:transform .3s ease;
 }
-.sidebar-glow {
-  position: absolute;
-  width: 240px; height: 240px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(10,147,150,0.13) 0%, transparent 70%);
-  top: -60px; left: -60px;
-  pointer-events: none;
+.sidebar-logo{
+  padding:24px 20px 20px;
+  border-bottom:1px solid var(--border);
 }
-.sidebar-logo {
-  padding: 28px 24px 22px;
-  font-family: 'Syne', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--teal);
-  letter-spacing: 1.5px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  position: relative;
+.logo-mark{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;color:var(--teal);text-transform:uppercase}
+.logo-title{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--text-primary);line-height:1.2;margin-top:2px}
+.admin-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  margin-top:10px;background:rgba(0,200,150,0.1);
+  border:1px solid rgba(0,200,150,0.25);
+  border-radius:6px;padding:4px 10px;
+  font-size:11px;font-weight:500;color:var(--teal);
 }
-.sidebar-logo span {
-  color: rgba(255,255,255,0.25);
-  font-weight: 400;
-  font-size: 0.68rem;
-  display: block;
-  margin-top: 3px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-.admin-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: rgba(238,155,0,0.15);
-  border: 1px solid rgba(238,155,0,0.3);
-  border-radius: 20px;
-  padding: 4px 10px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: var(--coral);
-  letter-spacing: 1px;
-  margin-top: 10px;
-}
-.sidebar-user {
-  padding: 20px 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  position: relative;
-}
-.user-avatar {
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--coral), #b5510a);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 1rem;
-  color: white;
-  margin-bottom: 10px;
-}
-.user-name { font-size: 0.88rem; font-weight: 600; color: white; }
-.user-role { font-size: 0.72rem; color: var(--coral); margin-top: 2px; }
+.admin-badge::before{content:'';width:6px;height:6px;background:var(--teal);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.sidebar-nav { flex: 1; padding: 20px 0; }
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 24px;
-  font-size: 0.84rem;
-  color: rgba(255,255,255,0.42);
-  cursor: pointer;
-  transition: all 0.2s;
-  border-left: 3px solid transparent;
+.sidebar-user{
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;
 }
-.nav-item:hover { color: white; background: rgba(255,255,255,0.04); }
-.nav-item.active {
-  color: var(--teal-light);
-  background: rgba(10,147,150,0.1);
-  border-left-color: var(--teal);
+.user-avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--teal),#0ea5e9);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:#fff;
+  flex-shrink:0;
 }
-.nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+.user-name{font-size:13px;font-weight:500;color:var(--text-primary)}
+.user-role{font-size:11px;color:var(--teal);margin-top:1px}
 
-.sidebar-bottom {
-  padding: 20px 24px;
-  border-top: 1px solid rgba(255,255,255,0.05);
+.sidebar-nav{flex:1;padding:12px 10px;overflow-y:auto}
+.nav-section-label{
+  font-size:10px;font-weight:600;letter-spacing:.12em;color:var(--text-muted);
+  text-transform:uppercase;padding:8px 10px 4px;
 }
-.logout-btn {
-  width: 100%;
-  padding: 11px;
-  background: transparent;
-  border: 1px solid rgba(10,147,150,0.3);
-  color: var(--teal-light);
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.83rem;
-  transition: all 0.25s;
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:8px;
+  cursor:pointer;transition:all .2s;
+  font-size:13px;font-weight:400;color:var(--text-secondary);
+  margin-bottom:2px;border:1px solid transparent;
+  text-decoration:none;
 }
-.logout-btn:hover { background: rgba(10,147,150,0.12); border-color: var(--teal); }
+.nav-item:hover{background:var(--teal-glow);color:var(--text-primary);border-color:rgba(0,200,150,0.15)}
+.nav-item.active{background:var(--teal-glow);color:var(--teal);border-color:rgba(0,200,150,0.2);font-weight:500}
+.nav-icon{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.nav-item.active .nav-icon,.nav-item:hover .nav-icon{opacity:1}
+.nav-badge{
+  margin-left:auto;background:var(--teal);color:var(--navy);
+  font-size:10px;font-weight:600;border-radius:10px;
+  padding:1px 6px;min-width:18px;text-align:center;
+}
+
+.sidebar-footer{padding:16px;border-top:1px solid var(--border)}
+.signout-btn{
+  width:100%;padding:9px 16px;border-radius:8px;
+  background:transparent;border:1px solid var(--border-light);
+  color:var(--text-secondary);font-family:'DM Sans',sans-serif;
+  font-size:13px;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.signout-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-dim)}
+
+/* ── HAMBURGER ── */
+#hamburger{
+  display:none;position:fixed;top:12px;left:12px;z-index:200;
+  background:var(--navy-light);border:1px solid var(--border);
+  border-radius:8px;padding:8px;cursor:pointer;
+  flex-direction:column;gap:4px;
+}
+#hamburger span{display:block;width:18px;height:2px;background:var(--text-primary);border-radius:2px;transition:all .3s}
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
 
 /* ── MAIN ── */
-.main {
-  margin-left: var(--sidebar-w);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+#main{
+  margin-left:var(--sidebar-w);flex:1;
+  height:100vh;overflow-y:auto;
+  background:var(--navy);
 }
+.top-bar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(10,22,40,0.95);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);
+  padding:14px 28px;display:flex;align-items:center;justify-content:space-between;
+}
+.page-title{display:flex;align-items:center;gap:10px}
+.page-title h1{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600}
+.page-meta{font-size:12px;color:var(--text-muted);margin-top:2px}
+.admin-view-btn{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);
+  border-radius:20px;padding:5px 14px;
+  font-size:12px;font-weight:500;color:var(--amber);cursor:pointer;
+  transition:all .2s;
+}
+.admin-view-btn:hover{background:rgba(245,158,11,0.2)}
 
-.topbar {
-  background: var(--card-bg);
-  border-bottom: 1px solid var(--border);
-  padding: 18px 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky; top: 0; z-index: 50;
-}
-.topbar-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--ocean-deep);
-}
-.topbar-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
+/* ── SECTIONS ── */
+.section{display:none;padding:24px 28px;animation:fadeIn .25s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-.live-badge {
-  display: flex; align-items: center; gap: 7px;
-  background: rgba(238,155,0,0.08);
-  border: 1px solid rgba(238,155,0,0.2);
-  border-radius: 20px;
-  padding: 6px 14px;
-  font-size: 0.75rem;
-  color: var(--coral);
-  font-weight: 500;
-}
-.live-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--coral);
-  animation: livepulse 1.5s ease-in-out infinite;
-}
-@keyframes livepulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
-
-.content { padding: 28px 32px; flex: 1; }
-
-.section-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: 14px;
-  margin-top: 30px;
-}
-.section-label:first-child { margin-top: 0; }
+.section-header{margin-bottom:20px}
+.section-header h2{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.08em}
 
 /* ── STAT CARDS ── */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 14px;
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:28px}
+.stat-card{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:12px;padding:18px;transition:all .2s;cursor:default;
+  position:relative;overflow:hidden;
 }
-.stat-card {
-  background: var(--card-bg);
-  border-radius: 14px;
-  padding: 20px 18px;
-  border: 1px solid var(--border);
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.25s, box-shadow 0.25s;
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--card-accent,var(--teal));opacity:.5;
 }
-.stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,0.08); }
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-}
-.stat-card.teal::before  { background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
-.stat-card.coral::before { background: linear-gradient(90deg, var(--coral), #f4a261); }
-.stat-card.blue::before  { background: linear-gradient(90deg, #0077b6, #48cae4); }
+.stat-card:hover{border-color:var(--border-light);background:var(--card-hover)}
+.stat-icon{font-size:22px;margin-bottom:10px;display:block}
+.stat-value{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:600;color:var(--text-primary);line-height:1}
+.stat-label{font-size:12px;color:var(--text-muted);margin-top:5px}
+.stat-trend{font-size:11px;margin-top:6px;color:var(--teal)}
 
-.stat-card .s-icon {
-  font-size: 1.1rem;
-  margin-bottom: 12px;
-}
-.stat-card .s-val {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.7rem;
-  font-weight: 800;
-  color: var(--ocean-deep);
-  line-height: 1;
-}
-.stat-card .s-label {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  margin-top: 5px;
-  line-height: 1.3;
-}
+/* ── TWO-COL LAYOUT ── */
+.two-col{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start}
+.map-card,.revenue-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-header h3{font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px}
+.badge-count{background:var(--teal);color:var(--navy);font-size:10px;font-weight:600;border-radius:10px;padding:1px 7px}
+#fleet-map{height:320px;background:#0d1b2e}
+.revenue-body{padding:16px}
+.rev-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)}
+.rev-row:last-child{border-bottom:none}
+.rev-type{display:flex;align-items:center;gap:9px;font-size:13px}
+.rev-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.rev-amount{font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--text-secondary)}
+.customer-mix{padding:16px;border-top:1px solid var(--border)}
+.customer-mix h4{font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase;margin-bottom:12px}
+.mix-bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden;margin-bottom:8px}
+.mix-fill{height:100%;border-radius:3px;background:var(--teal);width:0%;transition:width .8s ease}
+.mix-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted)}
 
-/* ── TWO COL ── */
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.three-col { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+/* ── TABLE ── */
+.table-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.table-toolbar{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.search-box{
+  display:flex;align-items:center;gap:8px;
+  background:var(--navy-mid);border:1px solid var(--border-light);
+  border-radius:8px;padding:7px 12px;flex:1;max-width:280px;
+}
+.search-box input{background:none;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-primary);width:100%}
+.search-box input::placeholder{color:var(--text-muted)}
+.btn-primary{
+  display:flex;align-items:center;gap:6px;
+  background:var(--teal);color:var(--navy);
+  border:none;border-radius:8px;padding:7px 14px;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;
+  transition:all .2s;
+}
+.btn-primary:hover{background:var(--teal-dim)}
+.btn-secondary{
+  display:flex;align-items:center;gap:6px;
+  background:transparent;color:var(--text-secondary);
+  border:1px solid var(--border-light);border-radius:8px;padding:7px 14px;
+  font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;
+  transition:all .2s;
+}
+.btn-secondary:hover{border-color:var(--teal);color:var(--teal)}
+table{width:100%;border-collapse:collapse}
+thead th{
+  padding:11px 16px;text-align:left;
+  font-size:11px;font-weight:600;letter-spacing:.09em;
+  color:var(--text-muted);text-transform:uppercase;
+  background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);
+}
+tbody tr{border-bottom:1px solid rgba(30,48,88,0.5);transition:background .15s;cursor:pointer}
+tbody tr:hover{background:var(--teal-glow)}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:12px 16px;font-size:13px;color:var(--text-primary)}
+.td-muted{color:var(--text-muted)!important;font-size:12px!important}
+.status-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  border-radius:20px;padding:3px 10px;font-size:11px;font-weight:500;
+}
+.status-active{background:rgba(0,200,150,0.12);color:var(--teal);border:1px solid rgba(0,200,150,0.2)}
+.status-idle{background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.2)}
+.status-maintenance{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,0.25)}
+.status-offline{background:var(--red-dim);color:#f87171;border:1px solid rgba(239,68,68,0.2)}
+.status-pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+.type-badge{
+  display:inline-block;border-radius:6px;padding:2px 8px;
+  font-size:11px;font-weight:500;
+}
+.type-private{background:rgba(168,85,247,0.12);color:#c084fc}
+.type-esg{background:var(--blue-dim);color:#60a5fa}
+.type-gov{background:rgba(16,185,129,0.12);color:#34d399}
 
-/* ── PANEL ── */
-.panel {
-  background: var(--card-bg);
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
-.panel-head {
-  padding: 18px 22px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.panel-head h3 {
-  font-family: 'Syne', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--ocean-deep);
-}
-.count-badge {
-  background: rgba(10,147,150,0.1);
-  color: var(--teal);
-  border-radius: 20px;
-  padding: 3px 10px;
-  font-size: 0.72rem;
-  font-weight: 600;
-}
-.panel-body { padding: 20px 22px; }
+/* ── FLEET MAP PAGE ── */
+#fleet-full-map{height:500px;border-radius:0 0 12px 12px;background:#0d1b2e}
+.fleet-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
 
-#map { height: 340px; }
+/* ── REVENUE PAGE ── */
+.rev-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.chart-placeholder{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:12px;padding:20px;
+}
+.bar-chart{display:flex;align-items:flex-end;gap:10px;height:160px;padding:10px 0 0}
+.bar-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.bar{width:100%;border-radius:4px 4px 0 0;transition:opacity .2s;cursor:pointer;min-height:4px}
+.bar:hover{opacity:.8}
+.bar-label{font-size:10px;color:var(--text-muted);text-align:center}
+.bar-val{font-size:10px;color:var(--text-secondary);text-align:center}
 
-/* ── CUSTOMER TABLE ── */
-.cust-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.81rem;
+/* ── SETTINGS ── */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.settings-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:20px}
+.settings-card h3{font-size:14px;font-weight:500;margin-bottom:4px}
+.settings-card .desc{font-size:12px;color:var(--text-muted);margin-bottom:16px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;color:var(--text-muted);margin-bottom:5px}
+.form-input{
+  width:100%;background:var(--navy-mid);border:1px solid var(--border-light);
+  border-radius:8px;padding:8px 12px;
+  font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-primary);
+  outline:none;transition:border-color .2s;
 }
-.cust-table thead th {
-  font-size: 0.66rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--text-muted);
-  padding: 9px 14px;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
+.form-input:focus{border-color:var(--teal)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-info{flex:1}
+.toggle-info span{display:block;font-size:13px}
+.toggle-info small{font-size:11px;color:var(--text-muted)}
+.toggle{position:relative;width:38px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.slider{
+  position:absolute;inset:0;background:var(--border-light);
+  border-radius:11px;cursor:pointer;transition:.3s;
 }
-.cust-table tbody td {
-  padding: 12px 14px;
-  border-bottom: 1px solid rgba(0,0,0,0.04);
-  vertical-align: middle;
+.slider::before{
+  content:'';position:absolute;width:16px;height:16px;
+  background:#fff;border-radius:50%;left:3px;bottom:3px;transition:.3s;
 }
-.cust-table tbody tr:last-child td { border-bottom: none; }
-.cust-table tbody tr:hover td { background: rgba(10,147,150,0.025); }
+.toggle input:checked+.slider{background:var(--teal)}
+.toggle input:checked+.slider::before{transform:translateX(16px)}
 
-.type-pill {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 0.68rem;
-  font-weight: 600;
-}
-.type-pill.private_waterfront { background: #dbeafe; color: #1d4ed8; }
-.type-pill.esg_corporation    { background: #dcfce7; color: #166534; }
-.type-pill.government         { background: #fef3c7; color: #92400e; }
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:48px 20px;color:var(--text-muted)}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:.4}
+.empty-state p{font-size:14px;margin-bottom:16px}
 
-.mono {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.75rem;
-  color: var(--ocean-mid);
+/* ── MODAL ── */
+#modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+  z-index:500;align-items:center;justify-content:center;padding:20px;
 }
-.amount-val {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: var(--ocean-deep);
+#modal-overlay.open{display:flex}
+.modal{
+  background:var(--navy-light);border:1px solid var(--border-light);
+  border-radius:14px;width:100%;max-width:440px;
+  padding:24px;position:relative;
 }
+.modal h3{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;margin-bottom:4px}
+.modal .sub{font-size:12px;color:var(--text-muted);margin-bottom:20px}
+.modal-close{
+  position:absolute;top:16px;right:16px;background:none;border:none;
+  color:var(--text-muted);cursor:pointer;font-size:18px;line-height:1;
+}
+.modal-footer{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
 
-/* ── REVENUE BREAKDOWN ── */
-.rev-items { display: flex; flex-direction: column; gap: 14px; }
-.rev-item .rev-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
-  font-size: 0.78rem;
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:24px;right:24px;z-index:999;
+  background:var(--navy-light);border:1px solid var(--teal);
+  border-radius:10px;padding:12px 18px;
+  font-size:13px;color:var(--teal);
+  transform:translateY(80px);opacity:0;transition:all .3s;
+  pointer-events:none;
 }
-.rev-item .rev-label { color: var(--text-muted); }
-.rev-item .rev-amount { font-weight: 600; color: var(--ocean-deep); font-family: 'DM Mono', monospace; font-size: 0.75rem; }
-.rev-bar-bg {
-  height: 6px;
-  background: rgba(0,0,0,0.07);
-  border-radius: 3px;
-  overflow: hidden;
-}
-.rev-bar-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 1s ease;
-}
-.rev-bar-fill.private { background: #3b82f6; }
-.rev-bar-fill.esg     { background: #10b981; }
-.rev-bar-fill.gov     { background: #f59e0b; }
+#toast.show{transform:translateY(0);opacity:1}
 
-/* ── CHART ── */
-.chart-wrap { height: 200px; position: relative; }
-
-/* ── LOADING ── */
-.loading-overlay {
-  position: fixed; inset: 0;
-  background: var(--ocean-deep);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  z-index: 9999;
-  transition: opacity 0.5s;
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  .two-col{grid-template-columns:1fr}
+  .settings-grid{grid-template-columns:1fr}
 }
-.loading-overlay.hide { opacity: 0; pointer-events: none; }
-.loader-ring {
-  width: 60px; height: 60px;
-  border-radius: 50%;
-  border: 3px solid rgba(238,155,0,0.2);
-  border-top-color: var(--coral);
-  animation: spin 0.8s linear infinite;
-  margin-bottom: 16px;
+@media(max-width:780px){
+  :root{--sidebar-w:240px}
+  #sidebar{transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0);box-shadow:4px 0 20px rgba(0,0,0,.4)}
+  #hamburger{display:flex}
+  #overlay.show{display:block}
+  #main{margin-left:0}
+  .top-bar{padding:12px 16px 12px 52px}
+  .section{padding:16px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .fleet-stat-row{grid-template-columns:repeat(2,1fr)}
+  .rev-summary-grid{grid-template-columns:1fr 1fr}
 }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-overlay p { color: rgba(255,255,255,0.4); font-size: 0.85rem; }
-
-/* ── DATE ── */
-.date-str { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
-
-@media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(3,1fr); } }
-@media (max-width: 960px)  { .two-col,.three-col { grid-template-columns: 1fr; } }
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .rev-summary-grid{grid-template-columns:1fr}
+  .two-col{gap:14px}
+}
 </style>
 </head>
 <body>
 
-<!-- LOADING -->
-<div class="loading-overlay" id="loader">
-  <div class="loader-ring"></div>
-  <p>Loading command centre...</p>
-</div>
+<!-- Hamburger -->
+<button id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+  <span></span><span></span><span></span>
+</button>
+<div id="overlay" onclick="toggleSidebar()"></div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="sidebar-glow"></div>
+<!-- Sidebar -->
+<nav id="sidebar">
   <div class="sidebar-logo">
-    AQUANAUT <span>SYSTEMS</span>
-    <div class="admin-badge">⚙️ ADMIN</div>
+    <div class="logo-mark">⚓ AquaNaut</div>
+    <div class="logo-title">Systems</div>
+    <div class="admin-badge">Admin</div>
   </div>
   <div class="sidebar-user">
-    <div class="user-avatar" id="adminInitials">AD</div>
-    <div class="user-name" id="adminName">Administrator</div>
-    <div class="user-role">Full System Access</div>
+    <div class="user-avatar">AA</div>
+    <div>
+      <div class="user-name">AquaNaut Admin</div>
+      <div class="user-role">Full System Access</div>
+    </div>
   </div>
   <nav class="sidebar-nav">
-    <div class="nav-item active"><span class="nav-icon">📊</span> Command Centre</div>
-    <div class="nav-item"><span class="nav-icon">👥</span> All Customers</div>
-    <div class="nav-item"><span class="nav-icon">🤖</span> All Bots</div>
-    <div class="nav-item"><span class="nav-icon">🗺️</span> Fleet Map</div>
-    <div class="nav-item"><span class="nav-icon">💰</span> Revenue</div>
-    <div class="nav-item"><span class="nav-icon">⚙️</span> Settings</div>
+    <div class="nav-section-label">Navigation</div>
+    <a class="nav-item active" data-section="dashboard" onclick="navigate('dashboard',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Command Centre
+    </a>
+    <a class="nav-item" data-section="customers" onclick="navigate('customers',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      All Customers
+    </a>
+    <a class="nav-item" data-section="bots" onclick="navigate('bots',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M12 11V7"/><circle cx="12" cy="5" r="2"/><path d="M8 15h.01M12 15h.01M16 15h.01"/></svg>
+      All Bots
+      <span class="nav-badge">3</span>
+    </a>
+    <a class="nav-item" data-section="fleet" onclick="navigate('fleet',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+      Fleet Map
+    </a>
+    <a class="nav-item" data-section="revenue" onclick="navigate('revenue',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Revenue
+    </a>
+    <a class="nav-item" data-section="settings" onclick="navigate('settings',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </a>
   </nav>
-  <div class="sidebar-bottom">
-    <button class="logout-btn" onclick="logout()">Sign Out</button>
+  <div class="sidebar-footer">
+    <button class="signout-btn" onclick="signOut()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign Out
+    </button>
   </div>
-</aside>
+</nav>
 
-<!-- MAIN -->
-<main class="main">
-  <div class="topbar">
-    <div>
-      <div class="topbar-title">⚓ Admin Command Centre</div>
-      <div class="topbar-sub" id="topbarSub">Loading system data...</div>
+<!-- Main -->
+<main id="main">
+  <div class="top-bar">
+    <div class="page-title">
+      <div>
+        <h1 id="page-heading">⚓ Admin Command Centre</h1>
+        <div class="page-meta" id="page-meta">Last updated: <span id="last-update"></span> · 0 customers · 3 bots</div>
+      </div>
     </div>
-    <div class="live-badge"><div class="live-dot"></div> Admin View</div>
+    <button class="admin-view-btn" onclick="showToast('Switching to customer view…')">
+      ⚡ Admin View
+    </button>
   </div>
 
-  <div class="content">
-
-    <!-- STAT CARDS -->
-    <div class="section-label">System Overview</div>
+  <!-- ── DASHBOARD ── -->
+  <div id="section-dashboard" class="section active">
     <div class="stats-grid">
-      <div class="stat-card teal">
-        <div class="s-icon">👥</div>
-        <div class="s-val" id="statCustomers">--</div>
-        <div class="s-label">Total Customers</div>
+      <div class="stat-card" style="--card-accent:#8b5cf6" onclick="navigate('customers',document.querySelector('[data-section=customers]'))">
+        <span class="stat-icon">👥</span>
+        <div class="stat-value">0</div>
+        <div class="stat-label">Total Customers</div>
+        <div class="stat-trend">↗ Add your first</div>
       </div>
-      <div class="stat-card teal">
-        <div class="s-icon">🤖</div>
-        <div class="s-val" id="statBots">--</div>
-        <div class="s-label">Total Bots Deployed</div>
+      <div class="stat-card" style="--card-accent:#3b82f6" onclick="navigate('bots',document.querySelector('[data-section=bots]'))">
+        <span class="stat-icon">🤖</span>
+        <div class="stat-value">3</div>
+        <div class="stat-label">Total Bots Deployed</div>
+        <div class="stat-trend">All operational</div>
       </div>
-      <div class="stat-card teal">
-        <div class="s-icon">✅</div>
-        <div class="s-val" id="statActive">--</div>
-        <div class="s-label">Active Bots</div>
+      <div class="stat-card" style="--card-accent:#00c896">
+        <span class="stat-icon">✅</span>
+        <div class="stat-value">3</div>
+        <div class="stat-label">Active Bots</div>
+        <div class="stat-trend">100% uptime</div>
       </div>
-      <div class="stat-card teal">
-        <div class="s-icon">🌊</div>
-        <div class="s-val" id="statWaste">--</div>
-        <div class="s-label">Total Waste (kg)</div>
+      <div class="stat-card" style="--card-accent:#f59e0b">
+        <span class="stat-icon">🌊</span>
+        <div class="stat-value">0.0</div>
+        <div class="stat-label">Total Waste (kg)</div>
+        <div class="stat-trend">Awaiting missions</div>
       </div>
-      <div class="stat-card coral">
-        <div class="s-icon">💰</div>
-        <div class="s-val" id="statRevenue">--</div>
-        <div class="s-label">Total Revenue (₦)</div>
+      <div class="stat-card" style="--card-accent:#10b981">
+        <span class="stat-icon">💰</span>
+        <div class="stat-value">₦0</div>
+        <div class="stat-label">Total Revenue (₦)</div>
+        <div class="stat-trend" onclick="navigate('revenue',document.querySelector('[data-section=revenue]'))">View breakdown →</div>
       </div>
     </div>
 
-    <!-- MAP + REVENUE -->
-    <div class="section-label">Fleet Map & Revenue</div>
-    <div class="three-col">
-      <div class="panel">
-        <div class="panel-head">
-          <h3>🗺️ All Bot Locations</h3>
-          <span class="count-badge" id="mapBadge">-- bots</span>
+    <div class="section-header"><h2>🗺 Fleet Map &amp; Revenue</h2></div>
+    <div class="two-col">
+      <div class="map-card">
+        <div class="card-header">
+          <h3>🗺 All Bot Locations <span class="badge-count">3 bots</span></h3>
+          <button class="btn-secondary" style="padding:4px 10px;font-size:12px" onclick="navigate('fleet',document.querySelector('[data-section=fleet]'))">Full Map →</button>
         </div>
-        <div id="map"></div>
+        <div id="fleet-map"></div>
       </div>
-
-      <div class="panel">
-        <div class="panel-head">
-          <h3>💰 Revenue by Type</h3>
-        </div>
-        <div class="panel-body">
-          <div class="rev-items" id="revItems">
-            <p style="color:var(--text-muted);font-size:0.82rem;">Loading...</p>
-          </div>
-          <div style="margin-top:24px;">
-            <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Customer Mix</div>
-            <div class="chart-wrap">
-              <canvas id="typeChart"></canvas>
+      <div class="revenue-card">
+        <div class="card-header"><h3>💰 Revenue by Type</h3></div>
+        <div class="revenue-body">
+          <div class="rev-row">
+            <div class="rev-type">
+              <div class="rev-icon" style="background:rgba(168,85,247,0.15)">🏠</div>
+              Private Waterfront
             </div>
+            <div class="rev-amount">₦0</div>
           </div>
+          <div class="rev-row">
+            <div class="rev-type">
+              <div class="rev-icon" style="background:var(--blue-dim)">🏢</div>
+              ESG Corporation
+            </div>
+            <div class="rev-amount">₦0</div>
+          </div>
+          <div class="rev-row">
+            <div class="rev-type">
+              <div class="rev-icon" style="background:rgba(16,185,129,0.15)">🏛</div>
+              Government
+            </div>
+            <div class="rev-amount">₦0</div>
+          </div>
+        </div>
+        <div class="customer-mix">
+          <h4>Customer Mix</h4>
+          <div class="mix-bar"><div class="mix-fill" id="mix-fill" style="width:0%"></div></div>
+          <div class="mix-labels"><span>0 customers</span><span>Target: 10</span></div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- CUSTOMER TABLE -->
-    <div class="section-label">All Registered Customers</div>
-    <div class="panel">
-      <div class="panel-head">
-        <h3>👥 Customer Registry</h3>
-        <span class="count-badge" id="custBadge">-- customers</span>
+  <!-- ── CUSTOMERS ── -->
+  <div id="section-customers" class="section">
+    <div class="table-card">
+      <div class="table-toolbar">
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search customers…" oninput="filterTable('customers-table',this.value)">
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-secondary" onclick="exportData('customers')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+          <button class="btn-primary" onclick="openAddCustomer()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Customer
+          </button>
+        </div>
       </div>
-      <div style="overflow-x:auto;">
-        <table class="cust-table">
+      <div id="customers-table-wrap">
+        <div class="empty-state">
+          <div class="empty-icon">👥</div>
+          <p>No customers yet. Add your first customer to get started.</p>
+          <button class="btn-primary" onclick="openAddCustomer()">+ Add Customer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BOTS ── -->
+  <div id="section-bots" class="section">
+    <div class="table-card">
+      <div class="table-toolbar">
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search bots…" oninput="filterTable('bots-table',this.value)">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-secondary" onclick="exportData('bots')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+          <button class="btn-primary" onclick="openAddBot()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Deploy Bot
+          </button>
+        </div>
+      </div>
+      <div id="bots-table-wrap">
+        <table id="bots-table">
           <thead>
             <tr>
+              <th>Bot ID</th>
               <th>Name</th>
-              <th>Email</th>
-              <th>Type</th>
-              <th>Fleets</th>
-              <th>Bots</th>
-              <th>Amount Paid</th>
-              <th>Joined</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Waste Collected</th>
+              <th>Last Active</th>
+              <th>Actions</th>
             </tr>
           </thead>
-          <tbody id="custTableBody">
-            <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">Loading customers...</td></tr>
-          </tbody>
+          <tbody id="bots-tbody"></tbody>
         </table>
       </div>
     </div>
+  </div>
 
+  <!-- ── FLEET MAP ── -->
+  <div id="section-fleet" class="section">
+    <div class="fleet-stat-row">
+      <div class="stat-card" style="--card-accent:#00c896">
+        <span class="stat-icon">🤖</span>
+        <div class="stat-value">3</div>
+        <div class="stat-label">Deployed Bots</div>
+      </div>
+      <div class="stat-card" style="--card-accent:#3b82f6">
+        <span class="stat-icon">✅</span>
+        <div class="stat-value">3</div>
+        <div class="stat-label">Active Now</div>
+      </div>
+      <div class="stat-card" style="--card-accent:#f59e0b">
+        <span class="stat-icon">📍</span>
+        <div class="stat-value">Lagos</div>
+        <div class="stat-label">Primary Region</div>
+      </div>
+      <div class="stat-card" style="--card-accent:#8b5cf6">
+        <span class="stat-icon">🌊</span>
+        <div class="stat-value">0.0 kg</div>
+        <div class="stat-label">Total Waste</div>
+      </div>
+    </div>
+    <div class="map-card">
+      <div class="card-header"><h3>🗺 Live Fleet Map <span class="badge-count">3 bots</span></h3>
+        <div style="font-size:12px;color:var(--text-muted)">Lagos, Nigeria</div>
+      </div>
+      <div id="fleet-full-map"></div>
+    </div>
+  </div>
+
+  <!-- ── REVENUE ── -->
+  <div id="section-revenue" class="section">
+    <div class="rev-summary-grid">
+      <div class="stat-card" style="--card-accent:#10b981">
+        <span class="stat-icon">💰</span>
+        <div class="stat-value">₦0</div>
+        <div class="stat-label">Total Revenue</div>
+      </div>
+      <div class="stat-card" style="--card-accent:#3b82f6">
+        <span class="stat-icon">📋</span>
+        <div class="stat-value">0</div>
+        <div class="stat-label">Total Invoices</div>
+      </div>
+      <div class="stat-card" style="--card-accent:#f59e0b">
+        <span class="stat-icon">⏳</span>
+        <div class="stat-value">₦0</div>
+        <div class="stat-label">Outstanding</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="chart-placeholder">
+        <div class="card-header" style="padding:0 0 14px;border:none"><h3 style="font-size:14px;font-weight:500">Monthly Revenue Trend</h3></div>
+        <div class="bar-chart" id="rev-chart"></div>
+        <div style="text-align:center;margin-top:8px;font-size:12px;color:var(--text-muted)">Jan – Jun 2026</div>
+      </div>
+      <div class="revenue-card">
+        <div class="card-header"><h3>Revenue by Customer Type</h3></div>
+        <div class="revenue-body">
+          <div class="rev-row">
+            <div class="rev-type"><div class="rev-icon" style="background:rgba(168,85,247,0.15)">🏠</div>Private Waterfront</div>
+            <div>
+              <div class="rev-amount">₦0</div>
+              <div style="font-size:10px;color:var(--text-muted)">0 contracts</div>
+            </div>
+          </div>
+          <div class="rev-row">
+            <div class="rev-type"><div class="rev-icon" style="background:var(--blue-dim)">🏢</div>ESG Corporation</div>
+            <div>
+              <div class="rev-amount">₦0</div>
+              <div style="font-size:10px;color:var(--text-muted)">0 contracts</div>
+            </div>
+          </div>
+          <div class="rev-row">
+            <div class="rev-type"><div class="rev-icon" style="background:rgba(16,185,129,0.15)">🏛</div>Government</div>
+            <div>
+              <div class="rev-amount">₦0</div>
+              <div style="font-size:10px;color:var(--text-muted)">0 contracts</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-header" style="border-top:1px solid var(--border);border-bottom:none;padding:14px 16px 0;margin-top:8px">
+          <h3 style="font-size:13px;font-weight:500;color:var(--text-secondary)">Recent Transactions</h3>
+        </div>
+        <div style="padding:12px 16px">
+          <div class="empty-state" style="padding:20px 0">
+            <div class="empty-icon" style="font-size:28px">💳</div>
+            <p style="font-size:12px">No transactions yet</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SETTINGS ── -->
+  <div id="section-settings" class="section">
+    <div class="settings-grid">
+      <div class="settings-card">
+        <h3>System Configuration</h3>
+        <p class="desc">Core platform settings and API configuration</p>
+        <div class="form-group">
+          <label>Platform Name</label>
+          <input class="form-input" value="AquaNaut Systems" placeholder="Platform name">
+        </div>
+        <div class="form-group">
+          <label>Admin Email</label>
+          <input class="form-input" type="email" value="admin@aquanautsystems.com.ng" placeholder="Admin email">
+        </div>
+        <div class="form-group">
+          <label>Currency</label>
+          <select class="form-input">
+            <option value="NGN" selected>Nigerian Naira (₦)</option>
+            <option value="USD">US Dollar ($)</option>
+            <option value="GBP">British Pound (£)</option>
+          </select>
+        </div>
+        <button class="btn-primary" style="width:100%;justify-content:center" onclick="showToast('Settings saved!')">Save Changes</button>
+      </div>
+      <div class="settings-card">
+        <h3>Notifications</h3>
+        <p class="desc">Control alert and notification preferences</p>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span>Bot Status Alerts</span>
+            <small>Notify when a bot goes offline or has an issue</small>
+          </div>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span>New Customer Registration</span>
+            <small>Email alert when a new customer joins</small>
+          </div>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span>Revenue Reports</span>
+            <small>Weekly revenue summary emails</small>
+          </div>
+          <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span>Maintenance Reminders</span>
+            <small>Scheduled maintenance notifications</small>
+          </div>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+      </div>
+      <div class="settings-card">
+        <h3>Bot Management Defaults</h3>
+        <p class="desc">Default values for new bot deployments</p>
+        <div class="form-group">
+          <label>Default Operating Region</label>
+          <input class="form-input" value="Lagos Lagoon" placeholder="Default region">
+        </div>
+        <div class="form-group">
+          <label>Collection Threshold (kg)</label>
+          <input class="form-input" type="number" value="50" placeholder="kg">
+        </div>
+        <div class="form-group">
+          <label>Return-to-Base Trigger</label>
+          <select class="form-input">
+            <option>Battery below 20%</option>
+            <option>Waste capacity full</option>
+            <option selected>Either condition</option>
+          </select>
+        </div>
+        <button class="btn-primary" style="width:100%;justify-content:center" onclick="showToast('Bot defaults saved!')">Save Defaults</button>
+      </div>
+      <div class="settings-card">
+        <h3>Security</h3>
+        <p class="desc">Account security and access control</p>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span>Two-Factor Authentication</span>
+            <small>Require 2FA for admin login</small>
+          </div>
+          <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span>Session Timeout</span>
+            <small>Auto-logout after 30 minutes idle</small>
+          </div>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span>Audit Logging</span>
+            <small>Log all admin actions</small>
+          </div>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div style="margin-top:16px">
+          <button class="btn-secondary" style="width:100%;justify-content:center" onclick="showToast('Password reset email sent!')">
+            Change Password
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </main>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Add Customer Modal -->
+<div id="modal-overlay">
+  <div class="modal" id="modal-content">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
 <script>
-// AUTH GUARD — admin only
-const token = localStorage.getItem("token");
-const role  = localStorage.getItem("role");
-const name  = localStorage.getItem("name");
-if (!token || role !== "admin") window.location.href = "login.html";
+// ── DATA ──
+const bots = [
+  {id:'BOT-001',name:'AquaBot Alpha',lat:6.443,lng:3.417,status:'active',waste:'0.0 kg',lastActive:'Just now',type:'Waste Collector'},
+  {id:'BOT-002',name:'AquaBot Beta',lat:6.449,lng:3.421,status:'active',waste:'0.0 kg',lastActive:'2 min ago',type:'Waste Collector'},
+  {id:'BOT-003',name:'AquaBot Gamma',lat:6.440,lng:3.412,status:'idle',waste:'0.0 kg',lastActive:'5 min ago',type:'Waste Collector'},
+];
+let customers = [];
+let maps = {};
 
-function logout() { localStorage.clear(); window.location.href = "login.html"; }
-
-// Admin identity
-document.getElementById("adminName").textContent = name || "Administrator";
-document.getElementById("adminInitials").textContent = (name || "AD").split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase();
-
-const TYPE_LABELS = {
-  private_waterfront: "Private Waterfront",
-  esg_corporation:    "ESG Corporation",
-  government:         "Government"
-};
-
-// Animate number counter
-function animateNum(el, target, prefix = "", suffix = "", decimals = 0) {
-  const dur = 1400, start = performance.now();
-  function step(now) {
-    const p   = Math.min((now - start) / dur, 1);
-    const val = target * (1 - Math.pow(1 - p, 3));
-    el.textContent = prefix + val.toFixed(decimals) + suffix;
-    if (p < 1) requestAnimationFrame(step);
-    else el.textContent = prefix + target.toFixed(decimals) + suffix;
+// ── NAVIGATION ──
+function navigate(section, el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('section-'+section).classList.add('active');
+  const titles = {
+    dashboard:'⚓ Admin Command Centre',
+    customers:'👥 All Customers',
+    bots:'🤖 All Bots',
+    fleet:'🗺 Fleet Map',
+    revenue:'💰 Revenue',
+    settings:'⚙ Settings'
+  };
+  document.getElementById('page-heading').textContent = titles[section]||section;
+  // Init maps lazily
+  if((section==='dashboard'||section==='fleet') && !maps[section]){
+    setTimeout(()=>initMap(section),80);
   }
-  requestAnimationFrame(step);
+  // Close sidebar on mobile
+  if(window.innerWidth<=780) closeSidebar();
 }
 
-// Format naira
-function naira(n) {
-  if (n >= 1_000_000_000) return "₦" + (n / 1_000_000_000).toFixed(1) + "B";
-  if (n >= 1_000_000)     return "₦" + (n / 1_000_000).toFixed(1) + "M";
-  return "₦" + n.toLocaleString();
+// ── MAPS ──
+function initMap(section){
+  const elId = section==='dashboard'?'fleet-map':'fleet-full-map';
+  const el = document.getElementById(elId);
+  if(!el||maps[section]) return;
+  const m = L.map(elId,{zoomControl:true,attributionControl:false}).setView([6.445,3.418],13);
+  maps[section] = m;
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+    attribution:'&copy; OpenStreetMap',maxZoom:19
+  }).addTo(m);
+  const icon = L.divIcon({
+    className:'',
+    html:`<div style="width:14px;height:14px;background:#00c896;border:2px solid #fff;border-radius:50%;box-shadow:0 0 8px rgba(0,200,150,.7)"></div>`,
+    iconSize:[14,14],iconAnchor:[7,7]
+  });
+  bots.forEach(b=>{
+    L.marker([b.lat,b.lng],{icon}).addTo(m)
+      .bindPopup(`<strong style='color:#00c896'>${b.name}</strong><br/>${b.id}<br/>Status: ${b.status}<br/>Waste: ${b.waste}`);
+  });
 }
 
-// Map
-const map = L.map("map", { zoomControl: true }).setView([6.5244, 3.3792], 11);
-L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-  attribution: "© CartoDB"
-}).addTo(map);
+// ── BOTS TABLE ──
+function renderBots(){
+  const tbody = document.getElementById('bots-tbody');
+  tbody.innerHTML = bots.map(b=>`
+    <tr>
+      <td style="font-family:'Space Grotesk',monospace;font-size:12px;color:var(--teal)">${b.id}</td>
+      <td><strong>${b.name}</strong><br><span class="td-muted">${b.type}</span></td>
+      <td class="td-muted">📍 Lagos Lagoon</td>
+      <td><span class="status-pill status-${b.status}">${b.status}</span></td>
+      <td>${b.waste}</td>
+      <td class="td-muted">${b.lastActive}</td>
+      <td>
+        <button class="btn-secondary" style="padding:4px 10px;font-size:11px" onclick="showToast('Viewing ${b.name}…')">View</button>
+      </td>
+    </tr>
+  `).join('');
+}
+renderBots();
 
-function makeMarker(bot) {
-  const color = bot.status === "active" ? "#0a9396" : "#d97706";
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="9"  fill="${color}" opacity="0.2"/>
-    <circle cx="12" cy="12" r="5"  fill="${color}"/>
-    <circle cx="12" cy="12" r="2.5" fill="white"/>
-  </svg>`;
-  return L.divIcon({ html: svg, className: "", iconSize: [24,24], iconAnchor: [12,12] });
+// ── REVENUE CHART ──
+function renderRevChart(){
+  const months=['Jan','Feb','Mar','Apr','May','Jun'];
+  const vals=[0,0,0,0,0,0];
+  const max=Math.max(...vals,1);
+  const chart=document.getElementById('rev-chart');
+  if(!chart)return;
+  chart.innerHTML=months.map((m,i)=>`
+    <div class="bar-group">
+      <div class="bar-val">₦${vals[i]}</div>
+      <div class="bar" style="height:${Math.max((vals[i]/max)*100,4)}%;background:var(--teal);opacity:.7" title="${m}: ₦${vals[i]}"></div>
+      <div class="bar-label">${m}</div>
+    </div>
+  `).join('');
+}
+renderRevChart();
+
+// ── FILTER TABLE ──
+function filterTable(tableId, query){
+  const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+  const q = query.toLowerCase();
+  rows.forEach(r=>{
+    r.style.display = r.textContent.toLowerCase().includes(q)?'':'none';
+  });
 }
 
-let typeChartInstance = null;
+// ── MODALS ──
+function openAddCustomer(){
+  document.getElementById('modal-body').innerHTML=`
+    <h3>Add New Customer</h3>
+    <p class="sub">Register a new customer to the AquaNaut platform</p>
+    <div class="form-group"><label>Full Name / Organisation</label><input class="form-input" id="m-name" placeholder="e.g. Lagoon View Estate"></div>
+    <div class="form-group"><label>Customer Type</label>
+      <select class="form-input" id="m-type">
+        <option>Private Waterfront</option>
+        <option>ESG Corporation</option>
+        <option>Government</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Email Address</label><input class="form-input" id="m-email" type="email" placeholder="customer@email.com"></div>
+    <div class="form-group"><label>Phone</label><input class="form-input" id="m-phone" type="tel" placeholder="+234 800 000 0000"></div>
+    <div class="form-group"><label>Location / Waterfront Address</label><input class="form-input" id="m-loc" placeholder="e.g. Victoria Island, Lagos"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="addCustomer()">Add Customer</button>
+    </div>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+}
 
-async function loadDashboard() {
-  try {
-    const res  = await fetch("https://aquanaut-backend1.onrender.com/admin-dashboard", {
-      headers: { Authorization: token }
-    });
-    const data = await res.json();
+function addCustomer(){
+  const name=document.getElementById('m-name').value.trim();
+  const type=document.getElementById('m-type').value;
+  const email=document.getElementById('m-email').value.trim();
+  const phone=document.getElementById('m-phone').value.trim();
+  const loc=document.getElementById('m-loc').value.trim();
+  if(!name){showToast('Please enter a customer name');return;}
+  customers.push({name,type,email,phone,loc,id:'CUST-'+String(customers.length+1).padStart(3,'0'),date:new Date().toLocaleDateString()});
+  renderCustomers();
+  closeModal();
+  showToast(`✅ ${name} added successfully!`);
+}
 
-    // Topbar
-    const now = new Date().toLocaleString("en-NG", { timeZone: "Africa/Lagos", dateStyle: "medium", timeStyle: "short" });
-    document.getElementById("topbarSub").textContent = `Last updated: ${now} · ${data.totalCustomers} customers · ${data.totalBots} bots`;
-
-    // Stat cards
-    animateNum(document.getElementById("statCustomers"), data.totalCustomers);
-    animateNum(document.getElementById("statBots"),      data.totalBots);
-    animateNum(document.getElementById("statActive"),    data.activeBots);
-    animateNum(document.getElementById("statWaste"),     data.totalWaste, "", "", 1);
-    document.getElementById("statRevenue").textContent = naira(data.totalRevenue);
-
-    // Map markers
-    document.getElementById("mapBadge").textContent = `${data.bots.length} bots`;
-    data.bots.forEach(bot => {
-      if (!bot.location?.lat) return;
-      L.marker([bot.location.lat, bot.location.lng], { icon: makeMarker(bot) })
-        .addTo(map)
-        .bindPopup(
-          `<b style="font-family:monospace;font-size:0.72rem">${bot.botId}</b><br>
-           Owner: ${bot.ownerEmail || "—"}<br>
-           Status: <b>${bot.status}</b><br>
-           Waste: <b>${bot.wasteCollected} kg</b>`
-        );
-    });
-
-    // Revenue breakdown by customer type
-    const revByType = { private_waterfront: 0, esg_corporation: 0, government: 0 };
-    data.customers.forEach(c => { revByType[c.customerType] = (revByType[c.customerType] || 0) + c.amountPaid; });
-    const totalRev = data.totalRevenue || 1;
-
-    document.getElementById("revItems").innerHTML = `
-      <div class="rev-item">
-        <div class="rev-header">
-          <span class="rev-label">🏠 Private Waterfront</span>
-          <span class="rev-amount">${naira(revByType.private_waterfront)}</span>
-        </div>
-        <div class="rev-bar-bg"><div class="rev-bar-fill private" style="width:${(revByType.private_waterfront/totalRev*100).toFixed(1)}%"></div></div>
-      </div>
-      <div class="rev-item">
-        <div class="rev-header">
-          <span class="rev-label">🏢 ESG Corporation</span>
-          <span class="rev-amount">${naira(revByType.esg_corporation)}</span>
-        </div>
-        <div class="rev-bar-bg"><div class="rev-bar-fill esg" style="width:${(revByType.esg_corporation/totalRev*100).toFixed(1)}%"></div></div>
-      </div>
-      <div class="rev-item">
-        <div class="rev-header">
-          <span class="rev-label">🏛️ Government</span>
-          <span class="rev-amount">${naira(revByType.government)}</span>
-        </div>
-        <div class="rev-bar-bg"><div class="rev-bar-fill gov" style="width:${(revByType.government/totalRev*100).toFixed(1)}%"></div></div>
-      </div>
-    `;
-
-    // Doughnut chart — customer type mix
-    const custByType = { private_waterfront: 0, esg_corporation: 0, government: 0 };
-    data.customers.forEach(c => { custByType[c.customerType] = (custByType[c.customerType] || 0) + 1; });
-
-    if (typeChartInstance) typeChartInstance.destroy();
-    typeChartInstance = new Chart(document.getElementById("typeChart"), {
-      type: "doughnut",
-      data: {
-        labels: ["Private Waterfront", "ESG Corporation", "Government"],
-        datasets: [{
-          data: [custByType.private_waterfront, custByType.esg_corporation, custByType.government],
-          backgroundColor: ["#3b82f6", "#10b981", "#f59e0b"],
-          borderWidth: 0,
-          hoverOffset: 4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: "68%",
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: { font: { size: 10 }, padding: 12, color: "#6b8a93", boxWidth: 10 }
-          }
-        }
-      }
-    });
-
-    // Customer table
-    document.getElementById("custBadge").textContent = `${data.totalCustomers} customers`;
-    const tbody = document.getElementById("custTableBody");
-    tbody.innerHTML = "";
-
-    if (!data.customers.length) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">No customers registered yet.</td></tr>`;
-    } else {
-      data.customers.forEach(c => {
-        const joined = new Date(c.createdAt).toLocaleDateString("en-NG", { day:"numeric", month:"short", year:"numeric" });
-        tbody.innerHTML += `
-          <tr>
-            <td style="font-weight:500;">${c.name}</td>
-            <td><span class="mono">${c.email}</span></td>
-            <td><span class="type-pill ${c.customerType}">${TYPE_LABELS[c.customerType] || c.customerType}</span></td>
-            <td style="text-align:center;">${c.fleets}</td>
-            <td style="text-align:center;">${c.totalBots}</td>
-            <td><span class="amount-val">₦${c.amountPaid.toLocaleString()}</span></td>
-            <td style="color:var(--text-muted);font-size:0.78rem;">${joined}</td>
-          </tr>
-        `;
-      });
-    }
-
-    // Hide loader
-    const loader = document.getElementById("loader");
-    loader.classList.add("hide");
-    setTimeout(() => loader.remove(), 600);
-
-  } catch (err) {
-    console.error("Admin dashboard error:", err);
-    document.getElementById("loader").querySelector("p").textContent = "Failed to load data. Is the server running?";
+function renderCustomers(){
+  const wrap=document.getElementById('customers-table-wrap');
+  if(!customers.length){
+    wrap.innerHTML=`<div class="empty-state"><div class="empty-icon">👥</div><p>No customers yet.</p><button class="btn-primary" onclick="openAddCustomer()">+ Add Customer</button></div>`;
+    return;
   }
+  wrap.innerHTML=`<table id="customers-table"><thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Contact</th><th>Location</th><th>Joined</th><th>Actions</th></tr></thead><tbody>
+    ${customers.map(c=>`<tr>
+      <td style="font-family:'Space Grotesk',monospace;font-size:12px;color:var(--teal)">${c.id}</td>
+      <td><strong>${c.name}</strong></td>
+      <td><span class="type-badge ${c.type.toLowerCase().includes('private')?'type-private':c.type.toLowerCase().includes('esg')?'type-esg':'type-gov'}">${c.type}</span></td>
+      <td class="td-muted">${c.email||'—'}<br>${c.phone||'—'}</td>
+      <td class="td-muted">📍 ${c.loc||'—'}</td>
+      <td class="td-muted">${c.date}</td>
+      <td><button class="btn-secondary" style="padding:4px 10px;font-size:11px" onclick="showToast('Viewing ${c.name}…')">View</button></td>
+    </tr>`).join('')}
+  </tbody></table>`;
+  document.getElementById('page-meta').textContent=`Last updated: ${new Date().toLocaleTimeString()} · ${customers.length} customer${customers.length!==1?'s':''} · 3 bots`;
 }
 
-loadDashboard();
-setInterval(loadDashboard, 60000);
+function openAddBot(){
+  document.getElementById('modal-body').innerHTML=`
+    <h3>Deploy New Bot</h3>
+    <p class="sub">Register and deploy a new AquaNaut waste collection bot</p>
+    <div class="form-group"><label>Bot Name</label><input class="form-input" placeholder="e.g. AquaBot Delta"></div>
+    <div class="form-group"><label>Deployment Zone</label><input class="form-input" placeholder="e.g. Victoria Island Lagoon"></div>
+    <div class="form-group"><label>Bot Serial Number</label><input class="form-input" placeholder="e.g. AQN-2026-XXX"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="closeModal();showToast('Bot deployment initiated!')">Deploy Bot</button>
+    </div>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open')}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── EXPORT ──
+function exportData(type){showToast(`Exporting ${type} data as CSV…`)}
+
+// ── SIGN OUT ──
+function signOut(){
+  if(confirm('Sign out of AquaNaut Admin?'))showToast('Signing out…');
+}
+
+// ── SIDEBAR TOGGLE (MOBILE) ──
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ── INIT ──
+const now=new Date();
+document.getElementById('last-update').textContent=now.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+', '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+setTimeout(()=>initMap('dashboard'),300);
 </script>
 </body>
 </html>
