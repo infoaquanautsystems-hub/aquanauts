@@ -971,7 +971,12 @@ function exportData(type){showToast(`Exporting ${type} data as CSV…`)}
 
 // ── SIGN OUT ──
 function signOut(){
-  if(confirm('Sign out of AquaNaut Admin?'))showToast('Signing out…');
+  if(confirm('Sign out of AquaNaut Admin?')){
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('name');
+    window.location.href = 'login.html';
+  }
 }
 
 // ── SIDEBAR TOGGLE (MOBILE) ──
